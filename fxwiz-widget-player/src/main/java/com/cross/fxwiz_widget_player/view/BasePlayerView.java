@@ -372,7 +372,7 @@ public abstract class BasePlayerView extends FrameLayout implements PlayerUiCont
 	}
 
 
-	public void setUp(@NonNull String[] url, @Nullable String title) {
+	public void setUp(@Nullable String title,@NonNull String ... url) {
 
 		this.mMediaUrls = url;
 		this.mMediaTitle = title;

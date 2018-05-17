@@ -29,14 +29,14 @@ public class MainActivity extends AppCompatActivity {
 //		frameLayout.addView(mPlayerView);
 		mPlayerView = findViewById(R.id.player_view);
 
-		String url = "https://vod.mudu.tv/media-join-slice/wpzkwc6qc82dcgkjbub6xt80q.m3u8";//回放
 		String url3 = "http://117.131.17.50/depository_yf/asset/zhengshi/1002/068/349/1002068349/media/1002068349_1003692265_91.mp4";
 		String url4 = "http://mgcdn.vod.mgspcloud.migucloud.com/vi1/564.1Uh7pg7SJ2TXwnmHsGjiGs.32.TpwNk5.mp4";
 		String url5 = "http://mgcdn.vod.mgspcloud.migucloud.com/vi1/564.1FKb3V6h1KrgAaUN17OiH.32.ECl4Mx.mp4";
 		String url6 = "https://135zyv3.xw0371.com/20180513/dChjVePU/index.m3u8";
-//		String[] mediaUrls = {url3,url4,url6,url,url4,url5};//视频
-		String[] mediaUrls = {"https://alhls.quanmin.tv/live/2138956658.m3u8"};//直播
-		mPlayerView.setUp(mediaUrls,"摄影之路");
+		String url2 = "https://cn-jsnt-dx-v-11.acgvideo.com/vg1/upgcxcode/44/33/24183344/preview_24183344-1-16.mp4?expires=1526565300&platform=html5&ssig=91CAjjj-ouK75bbOhIesqg&oi=2085243982&stime=0&etime=360&nfa=ZGlYLwTu0dW3o1gJGPmYTQ==&dynamic=1&hfa=2026786123&hfb=M2Y2ZWYwZjM2YmRiYmY5MDljYTBiOWE2ZmEwYjJmYTM=&trid=931ca46059e44626a0ad92a7ca7dd934";
+		String[] mediaUrls = {url2,url3,url4,url6,url4,url5};//视频
+//		String[] mediaUrls = {"https://alhls.quanmin.tv/live/2138956658.m3u8"};//直播
+		mPlayerView.setUp("摄影之路",mediaUrls);
 	}
 
 	/**
