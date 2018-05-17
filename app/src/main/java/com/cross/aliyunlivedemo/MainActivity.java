@@ -39,12 +39,18 @@ public class MainActivity extends AppCompatActivity {
 		mPlayerView.setUp(mediaUrls,"摄影之路");
 	}
 
+	/**
+	 * 添加处理横竖屏
+	 */
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
 		super.onConfigurationChanged(newConfig);
 		mPlayerView.onActivityConfigurationChanged(newConfig);
 	}
 
+	/**
+	 * 5.0 权限适配
+	 */
 	@Override
 	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
