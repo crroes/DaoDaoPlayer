@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     >
 
-    <com.cross.fxwiz_widget_player.view.MyVideoPlayerView
+    <com.cross.fxwiz_widget_player.view.MyLivePlayerView
         android:id="@+id/player_view"
         android:layout_width="match_parent"
         android:layout_height="200dp"/>

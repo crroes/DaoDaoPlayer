@@ -18,9 +18,7 @@ import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import com.aliyun.vodplayer.media.AliyunLocalSource;
 import com.cross.fxwiz_widget_player.R;
-import com.cross.fxwiz_widget_player.utils.JZUserAction;
 import com.cross.fxwiz_widget_player.utils.PlayerState;
 import com.cross.fxwiz_widget_player.utils.PlayerUtils;
 
@@ -32,8 +30,7 @@ import java.util.TimerTask;
  * <p>描述:视频器播放自定义view
  */
 
-public class MyVideoPlayerView extends BasePlayerView implements View.OnTouchListener {
-	AliyunLocalSource.AliyunLocalSourceBuilder mSourceBuilder;
+public class MyVideoPlayerView extends MyLivePlayerView implements View.OnTouchListener {
 
 	protected Timer UPDATE_PROGRESS_TIMER;
 	private ProgressTimerTask mProgressTimerTask;
@@ -57,9 +54,6 @@ public class MyVideoPlayerView extends BasePlayerView implements View.OnTouchLis
 	//	protected ProgressBar mDialogBrightnessProgressBar;
 	//	protected TextView mDialogBrightnessTextView;
 
-	public static long LAST_GET_BATTERYLEVEL_TIME = 0;
-	public static int LAST_GET_BATTERYLEVEL_PERCENT = 70;
-
 
 	public MyVideoPlayerView(@NonNull Context context) {
 		super(context);
@@ -75,7 +69,7 @@ public class MyVideoPlayerView extends BasePlayerView implements View.OnTouchLis
 
 	@Override
 	protected int getLayoutId() {
-		return R.layout.layout_player_video2;
+		return R.layout.layout_player_video;
 	}
 
 	@Override
@@ -84,7 +78,7 @@ public class MyVideoPlayerView extends BasePlayerView implements View.OnTouchLis
 		currentTimeTextView = findViewById(R.id.current);
 		totalTimeTextView = findViewById(R.id.total);
 		progressBar = findViewById(R.id.bottom_seek_progress);
-		//		textureViewContainer.setOnTouchListener(this);
+//		textureViewContainer.setOnTouchListener(this);
 		setSeekBarListener();
 	}
 
@@ -131,17 +125,6 @@ public class MyVideoPlayerView extends BasePlayerView implements View.OnTouchLis
 				Log.w(TAG, "seekTo " + time + " [" + this.hashCode() + "] ");
 			}
 		});
-	}
-
-	@Override
-	protected void setMediaSource() {
-
-		if (mSourceBuilder == null) {
-			mSourceBuilder = new AliyunLocalSource.AliyunLocalSourceBuilder();
-		}
-		mSourceBuilder.setSource(mMediaUrls[mMediaIndex]);
-		AliyunLocalSource mLocalSource = mSourceBuilder.build();
-		mAliyunPlayer.prepareAsync(mLocalSource);
 	}
 
 	/**
@@ -279,26 +262,20 @@ public class MyVideoPlayerView extends BasePlayerView implements View.OnTouchLis
 					//					dismissBrightnessDialog();
 					if (mChangePosition) {
 						//TODO unknown
-						onEvent(JZUserAction.ON_TOUCH_SCREEN_SEEK_POSITION);
+						//						onEvent(JZUserAction.ON_TOUCH_SCREEN_SEEK_POSITION);
 						//						JZMediaManager.seekTo(mSeekTimePosition);
 						long duration = mDuration;
 						int progress = (int) (mSeekTimePosition * 10000 / (duration == 0 ? 1 : duration));
 						progressBar.setProgress(progress);
 					}
 					if (mChangeVolume) {
-						onEvent(JZUserAction.ON_TOUCH_SCREEN_SEEK_VOLUME);
+						//						onEvent(JZUserAction.ON_TOUCH_SCREEN_SEEK_VOLUME);
 					}
 					startProgressTimer();
 					break;
 			}
 		}
 		return false;
-	}
-
-	public void onEvent(int type) {
-		//		if (JZ_USER_EVENT != null && isCurrentPlay() && dataSourceObjects != null) {
-		//			JZ_USER_EVENT.onEvent(type, JZUtils.getCurrentFromDataSource(dataSourceObjects, currentUrlMapIndex), currentScreen, objects);
-		//		}
 	}
 
 	public void dismissProgressDialog() {
@@ -393,20 +370,8 @@ public class MyVideoPlayerView extends BasePlayerView implements View.OnTouchLis
 		cancelProgressTimer();
 	}
 
-	private void controlsUiChange(boolean isShow) {
-		if (isShow) {
-			topContainer.setVisibility(VISIBLE);
-			bottomContainer.setVisibility(VISIBLE);
-			startButton.setVisibility(VISIBLE);
-		} else {
-			topContainer.setVisibility(INVISIBLE);
-			bottomContainer.setVisibility(INVISIBLE);
-			startButton.setVisibility(INVISIBLE);
-		}
 
-	}
-
-	public Dialog createDialogWithView(View localView) {
+	private Dialog createDialogWithView(View localView) {
 
 		Dialog dialog = new Dialog(getContext(), R.style.player_style_dialog_progress);
 		dialog.setContentView(localView);
@@ -421,7 +386,7 @@ public class MyVideoPlayerView extends BasePlayerView implements View.OnTouchLis
 		return dialog;
 	}
 
-	public void startProgressTimer() {
+	private void startProgressTimer() {
 		Log.i(TAG, "startProgressTimer: " + " [" + this.hashCode() + "] ");
 		cancelProgressTimer();
 		UPDATE_PROGRESS_TIMER = new Timer();
@@ -429,7 +394,7 @@ public class MyVideoPlayerView extends BasePlayerView implements View.OnTouchLis
 		UPDATE_PROGRESS_TIMER.schedule(mProgressTimerTask, 0, 300);
 	}
 
-	public void cancelProgressTimer() {
+	private void cancelProgressTimer() {
 		if (UPDATE_PROGRESS_TIMER != null) {
 			UPDATE_PROGRESS_TIMER.cancel();
 		}
@@ -441,7 +406,7 @@ public class MyVideoPlayerView extends BasePlayerView implements View.OnTouchLis
 	/**
 	 * 播放进度的TimerTask
 	 */
-	public class ProgressTimerTask extends TimerTask {
+	private class ProgressTimerTask extends TimerTask {
 		@Override
 		public void run() {
 			if (mCurrentState == PlayerState.CURRENT_STATE_PLAYING || mCurrentState == PlayerState.CURRENT_STATE_PAUSE) {

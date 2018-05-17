@@ -7,12 +7,12 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 
 import com.cross.fxwiz_widget_player.utils.PermissionUtils;
-import com.cross.fxwiz_widget_player.view.MyVideoPlayerView;
+import com.cross.fxwiz_widget_player.view.BasePlayerView;
 
 public class MainActivity extends AppCompatActivity {
 
 
-	private MyVideoPlayerView mPlayerView;
+	private BasePlayerView mPlayerView;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -34,9 +34,9 @@ public class MainActivity extends AppCompatActivity {
 		String url4 = "http://mgcdn.vod.mgspcloud.migucloud.com/vi1/564.1Uh7pg7SJ2TXwnmHsGjiGs.32.TpwNk5.mp4";
 		String url5 = "http://mgcdn.vod.mgspcloud.migucloud.com/vi1/564.1FKb3V6h1KrgAaUN17OiH.32.ECl4Mx.mp4";
 		String url6 = "https://135zyv3.xw0371.com/20180513/dChjVePU/index.m3u8";
-		String[] videos = {url3,url4,url6,url,url4,url5};
-		String[] lives = {"https://alhls.quanmin.tv/live/1461252138.m3u8"};
-		mPlayerView.setUp(videos,"摄影之路");
+//		String[] mediaUrls = {url3,url4,url6,url,url4,url5};//视频
+		String[] mediaUrls = {"https://alhls.quanmin.tv/live/2138956658.m3u8"};//直播
+		mPlayerView.setUp(mediaUrls,"摄影之路");
 	}
 
 	@Override

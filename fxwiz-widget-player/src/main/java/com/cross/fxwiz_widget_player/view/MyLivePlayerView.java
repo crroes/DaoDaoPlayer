@@ -5,7 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 
-import com.aliyun.vodplayer.media.AliyunLiveTimeShift;
+import com.aliyun.vodplayer.media.AliyunLocalSource;
 import com.cross.fxwiz_widget_player.R;
 
 /**
@@ -15,7 +15,7 @@ import com.cross.fxwiz_widget_player.R;
 
 public class MyLivePlayerView extends BasePlayerView {
 
-	private AliyunLiveTimeShift mAliyunLiveTimeShift;
+	AliyunLocalSource.AliyunLocalSourceBuilder mSourceBuilder;
 
 	public MyLivePlayerView(@NonNull Context context) {
 		super(context);
@@ -29,63 +29,77 @@ public class MyLivePlayerView extends BasePlayerView {
 		super(context, attrs, defStyleAttr);
 	}
 
+
 	@Override
 	protected int getLayoutId() {
 		return R.layout.layout_player_live;
 	}
 
-	@Override
-	protected void initChild() {
-		mAliyunLiveTimeShift = new AliyunLiveTimeShift();
-	}
 
 	@Override
 	protected void setMediaSource() {
 
-		long currentSeconds = System.currentTimeMillis() / 1000;
-		//有鉴权地址
-		mAliyunLiveTimeShift.setUrl("http://pull-videocall.aliyuncs.com/timeline/test.m3u8");
-		mAliyunLiveTimeShift.setTimeLineUrl("http://pull-videocall.aliyuncs.com/openapi/timeline/query?lhs_start=1&app=timeline&stream=test&format=ts&lhs_start_unix_s_0=" + (currentSeconds - 5 * 60) + "&lhs_end_unix_s_0=" + (currentSeconds + 5 * 60));
-
-		//无鉴权地址
-		//        mAliyunLiveTimeShift.setUrl("http://cctv1.cntv.cdnpe.com/timeline/cctv5td.m3u8");
-		//        mAliyunLiveTimeShift.setTimeLineUrl("http://cctv1.cntv.cdnpe.com/openapi/timeline/query?app=timeline&stream=cctv5td&format=ts&lhs_start_unix_s_0="
-		//                + ( currentSeconds -5*60 ) + "&lhs_end_unix_s_0="+ (currentSeconds + 5*60));
-		mAliyunPlayer.prepareAsync(mAliyunLiveTimeShift);
+		if (mSourceBuilder == null) {
+			mSourceBuilder = new AliyunLocalSource.AliyunLocalSourceBuilder();
+		}
+		mSourceBuilder.setSource(mMediaUrls[mMediaIndex]);
+		AliyunLocalSource mLocalSource = mSourceBuilder.build();
+		mAliyunPlayer.prepareAsync(mLocalSource);
 	}
 
 	@Override
 	public void changeUiToPreparing() {
-
+		startButton.setVisibility(INVISIBLE);
+		loadingProgressBar.setVisibility(VISIBLE);
 	}
 
 	@Override
 	public void changeUiToPlayingShow() {
-
+		updateStartImage();
+		loadingProgressBar.setVisibility(INVISIBLE);
+		controlsUiChange(true);
 	}
 
 	@Override
 	public void changeUiToPlayingClear() {
-
+		updateStartImage();
 	}
 
 	@Override
 	public void changeUiToPauseShow() {
-
+		updateStartImage();
+		controlsUiChange(true);
 	}
 
 	@Override
 	public void changeUiToComplete() {
+		updateStartImage();
 
 	}
 
 	@Override
 	public void changeUiToError() {
+		updateStartImage();
 
 	}
-
 
 	@Override
 	public void hideUiControls() {
+		controlsUiChange(false);
+
 	}
+
+	protected void controlsUiChange(boolean isShow) {
+		if (isShow) {
+			topContainer.setVisibility(VISIBLE);
+			bottomContainer.setVisibility(VISIBLE);
+			startButton.setVisibility(VISIBLE);
+		} else {
+			topContainer.setVisibility(INVISIBLE);
+			bottomContainer.setVisibility(INVISIBLE);
+			startButton.setVisibility(INVISIBLE);
+		}
+
+	}
+
 }

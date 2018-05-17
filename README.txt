@@ -1,0 +1,2 @@
+基于aliyun高级播放器的视频直播框架
+底层是ijkplayer，FFmpeg

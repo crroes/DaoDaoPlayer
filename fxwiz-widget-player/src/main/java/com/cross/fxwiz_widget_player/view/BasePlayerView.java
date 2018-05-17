@@ -66,6 +66,7 @@ public abstract class BasePlayerView extends FrameLayout implements PlayerUiCont
 	public TextView titleTextView;
 	public ImageView startButton;
 	public ImageView fullscreenButton;
+	public ViewGroup bottomContainer;
 
 	public ProgressBar loadingProgressBar;
 	public ImageView thumbImageView;
@@ -82,7 +83,7 @@ public abstract class BasePlayerView extends FrameLayout implements PlayerUiCont
 	protected AudioManager mAudioManager;
 
 	public ViewGroup textureViewContainer;
-	public ViewGroup topContainer, bottomContainer;
+	public ViewGroup topContainer;
 	private HideUiTimerTask mHideUiTimerTask;
 
 
@@ -117,6 +118,7 @@ public abstract class BasePlayerView extends FrameLayout implements PlayerUiCont
 		mRetryBtn = findViewById(R.id.retry_btn);//点击重试
 		mRetryLayout = findViewById(R.id.retry_layout);//视频加载失败
 		mLockButton = findViewById(R.id.ib_lock); //锁
+		bottomContainer = findViewById(R.id.layout_bottom);//底部容器
 
 		loadingProgressBar.setVisibility(VISIBLE);
 		startButton.setVisibility(INVISIBLE);
@@ -126,11 +128,12 @@ public abstract class BasePlayerView extends FrameLayout implements PlayerUiCont
 		mLockButton.setOnClickListener(mOnClickListener);
 		thumbImageView.setOnClickListener(mOnClickListener);
 		backButton.setOnClickListener(mOnClickListener);
-		clarity.setOnClickListener(mOnClickListener);
 		mRetryBtn.setOnClickListener(mOnClickListener);
 		startButton.setOnClickListener(mOnClickListener);
+		if (clarity != null) {
+			clarity.setOnClickListener(mOnClickListener);
+		}
 
-		bottomContainer = findViewById(R.id.layout_bottom);
 		textureViewContainer = findViewById(R.id.surface_container);
 		topContainer = findViewById(R.id.layout_top);
 		textureViewContainer.setOnClickListener(mOnClickListener);//视图窗口的点击事件
@@ -147,7 +150,7 @@ public abstract class BasePlayerView extends FrameLayout implements PlayerUiCont
 		switch (ev.getAction()) {
 			case MotionEvent.ACTION_DOWN:
 			case MotionEvent.ACTION_UP:
-				Log.d(TAG,"Touch event");
+				Log.d(TAG, "Touch event");
 				if (mCurrentState == PlayerState.CURRENT_STATE_PLAYING || mCurrentScreenState == PlayerState.CURRENT_STATE_PAUSE) {
 					if (mCurrentScreenState == PlayerState.SCREEN_WINDOW_FULLSCREEN) {
 						mLockButton.setVisibility(VISIBLE);
@@ -569,9 +572,9 @@ public abstract class BasePlayerView extends FrameLayout implements PlayerUiCont
 				changeUiToPlayingShow();
 			} else if (mCurrentState == PlayerState.CURRENT_STATE_PAUSE) {
 				changeUiToPauseShow();
-			}else if (mCurrentState == PlayerState.CURRENT_STATE_COMPLETE){
+			} else if (mCurrentState == PlayerState.CURRENT_STATE_COMPLETE) {
 				changeUiToComplete();
-			}else if (mCurrentState == PlayerState.CURRENT_STATE_ERROR){
+			} else if (mCurrentState == PlayerState.CURRENT_STATE_ERROR) {
 				changeUiToError();
 			}
 		}
