@@ -350,21 +350,15 @@ public class MyVideoPlayerView extends BasePlayerView implements View.OnTouchLis
 
 	@Override
 	public void changeUiToPreparing() {
-
 		startButton.setVisibility(INVISIBLE);
 		loadingProgressBar.setVisibility(VISIBLE);
-
 	}
 
 	@Override
 	public void changeUiToPlayingShow() {
 		updateStartImage();
-		topContainer.setVisibility(VISIBLE);
 		loadingProgressBar.setVisibility(INVISIBLE);
-		startButton.setVisibility(VISIBLE);
-
-		bottomContainer.setVisibility(VISIBLE);
-
+		controlsUiChange(true);
 		startProgressTimer();
 	}
 
@@ -377,6 +371,7 @@ public class MyVideoPlayerView extends BasePlayerView implements View.OnTouchLis
 	@Override
 	public void changeUiToPauseShow() {
 		updateStartImage();
+		controlsUiChange(true);
 	}
 
 	@Override
@@ -393,11 +388,22 @@ public class MyVideoPlayerView extends BasePlayerView implements View.OnTouchLis
 
 	@Override
 	public void hideUiControls() {
-		topContainer.setVisibility(INVISIBLE);
-		bottomContainer.setVisibility(INVISIBLE);
-		startButton.setVisibility(INVISIBLE);
-		thumbImageView.setVisibility(INVISIBLE);
+
+		controlsUiChange(false);
 		cancelProgressTimer();
+	}
+
+	private void controlsUiChange(boolean isShow) {
+		if (isShow) {
+			topContainer.setVisibility(VISIBLE);
+			bottomContainer.setVisibility(VISIBLE);
+			startButton.setVisibility(VISIBLE);
+		} else {
+			topContainer.setVisibility(INVISIBLE);
+			bottomContainer.setVisibility(INVISIBLE);
+			startButton.setVisibility(INVISIBLE);
+		}
+
 	}
 
 	public Dialog createDialogWithView(View localView) {
