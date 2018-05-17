@@ -20,4 +20,8 @@ public class PlayerState {
 	public static final int SCREEN_WINDOW_NORMAL = 0;
 	public static final int SCREEN_WINDOW_FULLSCREEN = 1;//全屏
 
+	//锁的状态（锁定状态下所有控制view隐藏）
+	public static final int SCREEN_WINDOW_UNLOCK = 1001;//未锁
+	public static final int SCREEN_WINDOW_LOCK = 1002;//加锁
+
 }

@@ -8,7 +8,7 @@ import android.view.View;
 public abstract class OnClickNoMutiListener implements View.OnClickListener {
 
     private long lastClickTime = 0;
-    private final int SPACE_TIME = 500;
+    private final int SPACE_TIME = 120;
 
 
     public boolean isMultipleClick() {

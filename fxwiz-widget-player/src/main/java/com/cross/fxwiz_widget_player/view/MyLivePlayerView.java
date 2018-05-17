@@ -45,8 +45,7 @@ public class MyLivePlayerView extends BasePlayerView {
 		long currentSeconds = System.currentTimeMillis() / 1000;
 		//有鉴权地址
 		mAliyunLiveTimeShift.setUrl("http://pull-videocall.aliyuncs.com/timeline/test.m3u8");
-		mAliyunLiveTimeShift.setTimeLineUrl("http://pull-videocall.aliyuncs.com/openapi/timeline/query?lhs_start=1&app=timeline&stream=test&format=ts&lhs_start_unix_s_0="
-				+ (currentSeconds - 5 * 60) + "&lhs_end_unix_s_0=" + (currentSeconds + 5 * 60));
+		mAliyunLiveTimeShift.setTimeLineUrl("http://pull-videocall.aliyuncs.com/openapi/timeline/query?lhs_start=1&app=timeline&stream=test&format=ts&lhs_start_unix_s_0=" + (currentSeconds - 5 * 60) + "&lhs_end_unix_s_0=" + (currentSeconds + 5 * 60));
 
 		//无鉴权地址
 		//        mAliyunLiveTimeShift.setUrl("http://cctv1.cntv.cdnpe.com/timeline/cctv5td.m3u8");
@@ -85,13 +84,8 @@ public class MyLivePlayerView extends BasePlayerView {
 
 	}
 
-	@Override
-	public void changeUiToLock() {
-
-	}
 
 	@Override
 	public void hideUiControls() {
-
 	}
 }

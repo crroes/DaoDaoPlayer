@@ -24,7 +24,9 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:background="#000000"
-        android:scaleType="fitCenter" />
+        android:scaleType="fitCenter"
+        android:visibility="gone"
+        />
 
     <LinearLayout
         android:id="@+id/layout_bottom"
@@ -127,10 +129,19 @@
 
     </RelativeLayout>
 
+    <ImageButton
+        android:id="@+id/ib_lock"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:padding="20dp"
+        android:visibility="invisible"
+        android:background="#00000000"
+        />
     <ProgressBar
         android:id="@+id/loading"
-        android:layout_width="45dp"
-        android:layout_height="45dp"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:indeterminateDrawable="@drawable/jz_loading"

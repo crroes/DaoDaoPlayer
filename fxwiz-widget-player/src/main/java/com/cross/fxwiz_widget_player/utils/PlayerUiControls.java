@@ -12,6 +12,6 @@ public interface PlayerUiControls {
 	void changeUiToPauseShow();//暂停
 	void changeUiToComplete();//播放完成
 	void changeUiToError();//播放错误
-	void changeUiToLock();//锁屏
+	void changeLockUi();//锁屏
 	void hideUiControls();//隐藏控制ui
 }

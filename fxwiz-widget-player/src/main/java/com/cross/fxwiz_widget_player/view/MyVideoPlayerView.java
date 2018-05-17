@@ -48,13 +48,14 @@ public class MyVideoPlayerView extends BasePlayerView implements View.OnTouchLis
 	protected TextView mDialogSeekTime;
 	protected TextView mDialogTotalTime;
 	protected ImageView mDialogIcon;
-	protected Dialog mVolumeDialog;
-	protected ProgressBar mDialogVolumeProgressBar;
-	protected TextView mDialogVolumeTextView;
-	protected ImageView mDialogVolumeImageView;
-	protected Dialog mBrightnessDialog;
-	protected ProgressBar mDialogBrightnessProgressBar;
-	protected TextView mDialogBrightnessTextView;
+	//TODO 下个版本添加音量控制
+	//	protected Dialog mVolumeDialog;
+	//	protected ProgressBar mDialogVolumeProgressBar;
+	//	protected TextView mDialogVolumeTextView;
+	//	protected ImageView mDialogVolumeImageView;
+	//	protected Dialog mBrightnessDialog;
+	//	protected ProgressBar mDialogBrightnessProgressBar;
+	//	protected TextView mDialogBrightnessTextView;
 
 	public static long LAST_GET_BATTERYLEVEL_TIME = 0;
 	public static int LAST_GET_BATTERYLEVEL_PERCENT = 70;
@@ -83,7 +84,7 @@ public class MyVideoPlayerView extends BasePlayerView implements View.OnTouchLis
 		currentTimeTextView = findViewById(R.id.current);
 		totalTimeTextView = findViewById(R.id.total);
 		progressBar = findViewById(R.id.bottom_seek_progress);
-//		textureViewContainer.setOnTouchListener(this);
+		//		textureViewContainer.setOnTouchListener(this);
 		setSeekBarListener();
 	}
 
@@ -130,15 +131,6 @@ public class MyVideoPlayerView extends BasePlayerView implements View.OnTouchLis
 				Log.w(TAG, "seekTo " + time + " [" + this.hashCode() + "] ");
 			}
 		});
-	}
-
-	public void setControlsVisibility(int topCon, int bottomCon, int startBtn, int loadingPro, int thumbImg, int retryLayout) {
-		topContainer.setVisibility(topCon);
-		bottomContainer.setVisibility(bottomCon);
-		startButton.setVisibility(startBtn);
-		loadingProgressBar.setVisibility(loadingPro);
-		thumbImageView.setVisibility(thumbImg);
-		mRetryLayout.setVisibility(retryLayout);
 	}
 
 	@Override
@@ -356,24 +348,6 @@ public class MyVideoPlayerView extends BasePlayerView implements View.OnTouchLis
 		}
 	}
 
-	//	public void changeUiToPreparing() {
-	//		switch (mCurrentState) {
-	//			//TODO 页面切换显示
-	//			case PlayerState.SCREEN_WINDOW_NORMAL:
-	//				setAllControlsVisiblity(View.INVISIBLE, View.INVISIBLE, View.INVISIBLE,
-	//						View.VISIBLE, View.VISIBLE, View.INVISIBLE, View.INVISIBLE);
-	//				updateStartImage();
-	//				break;
-	//			case PlayerState.SCREEN_WINDOW_FULLSCREEN:
-	//				setAllControlsVisiblity(View.INVISIBLE, View.INVISIBLE, View.INVISIBLE,
-	//						View.VISIBLE, View.VISIBLE, View.INVISIBLE, View.INVISIBLE);
-	//				updateStartImage();
-	//				break;
-	//		}
-	//
-	//	}
-
-
 	@Override
 	public void changeUiToPreparing() {
 
@@ -385,8 +359,10 @@ public class MyVideoPlayerView extends BasePlayerView implements View.OnTouchLis
 	@Override
 	public void changeUiToPlayingShow() {
 		updateStartImage();
+		topContainer.setVisibility(VISIBLE);
 		loadingProgressBar.setVisibility(INVISIBLE);
 		startButton.setVisibility(VISIBLE);
+
 		bottomContainer.setVisibility(VISIBLE);
 
 		startProgressTimer();
@@ -416,17 +392,12 @@ public class MyVideoPlayerView extends BasePlayerView implements View.OnTouchLis
 	}
 
 	@Override
-	public void changeUiToLock() {
-		updateStartImage();
-
-	}
-
-	@Override
 	public void hideUiControls() {
-		//TODO 隐藏控制ui
-		bottomContainer.setVisibility(INVISIBLE);
 		topContainer.setVisibility(INVISIBLE);
-		startButton.setVisibility(VISIBLE);
+		bottomContainer.setVisibility(INVISIBLE);
+		startButton.setVisibility(INVISIBLE);
+		thumbImageView.setVisibility(INVISIBLE);
+		cancelProgressTimer();
 	}
 
 	public Dialog createDialogWithView(View localView) {

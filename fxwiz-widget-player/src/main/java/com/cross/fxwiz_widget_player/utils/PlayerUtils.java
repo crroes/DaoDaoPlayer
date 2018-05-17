@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.ContextWrapper;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ContextThemeWrapper;
-import android.view.Window;
 
 import java.util.Formatter;
 import java.util.Locale;
@@ -35,12 +34,9 @@ public class PlayerUtils {
 		}
 	}
 
-	public static Window getWindow(Context context) {
-		if (getAppCompActivity(context) != null) {
-			return getAppCompActivity(context).getWindow();
-		} else {
-			return scanForActivity(context).getWindow();
-		}
+	public static int dip2px(Context context, float dpValue) {
+		final float scale = context.getResources().getDisplayMetrics().density;
+		return (int) (dpValue * scale + 0.5f);
 	}
 
 	/**

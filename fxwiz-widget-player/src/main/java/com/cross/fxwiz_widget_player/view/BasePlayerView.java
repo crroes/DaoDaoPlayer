@@ -9,12 +9,14 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -28,6 +30,9 @@ import com.cross.fxwiz_widget_player.utils.PermissionUtils;
 import com.cross.fxwiz_widget_player.utils.PlayerState;
 import com.cross.fxwiz_widget_player.utils.PlayerUiControls;
 import com.cross.fxwiz_widget_player.utils.PlayerUtils;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Created by cross on 2018/5/14.
@@ -48,10 +53,13 @@ public abstract class BasePlayerView extends FrameLayout implements PlayerUiCont
 	protected int mMediaIndex;
 	protected String mMediaTitle;
 	private boolean isAutoPlay = false;
-	protected int mCurrentState = PlayerState.CURRENT_STATE_NORMAL;
-	protected int mCurrentScreenState;
+	protected int mCurrentState = PlayerState.CURRENT_STATE_NORMAL; //播放状态
+	protected int mCurrentScreenState;//屏幕状态
+	protected int mCurrentScreenLockState = PlayerState.SCREEN_WINDOW_UNLOCK;//ui锁状态
+	protected boolean isMoving;//是否正在滑动进度
 	protected long mDuration;//总长度
 	protected long mCurrentPosition;//当前的长度位置
+	private Timer HIDE_CONTROL_VIEW_TIMER;//屏幕隐藏任务timer
 
 
 	public ImageView backButton;
@@ -64,6 +72,7 @@ public abstract class BasePlayerView extends FrameLayout implements PlayerUiCont
 	public TextView replayTextView;
 	public TextView clarity;
 	public TextView mRetryBtn;
+	private ImageButton mLockButton;
 	public LinearLayout mRetryLayout;
 
 	protected int mScreenWidth;
@@ -74,6 +83,7 @@ public abstract class BasePlayerView extends FrameLayout implements PlayerUiCont
 
 	public ViewGroup textureViewContainer;
 	public ViewGroup topContainer, bottomContainer;
+	private HideUiTimerTask mHideUiTimerTask;
 
 
 	public BasePlayerView(@NonNull Context context) {
@@ -106,12 +116,14 @@ public abstract class BasePlayerView extends FrameLayout implements PlayerUiCont
 		clarity = findViewById(R.id.clarity);//透明？
 		mRetryBtn = findViewById(R.id.retry_btn);//点击重试
 		mRetryLayout = findViewById(R.id.retry_layout);//视频加载失败
+		mLockButton = findViewById(R.id.ib_lock); //锁
 
 		loadingProgressBar.setVisibility(VISIBLE);
 		startButton.setVisibility(INVISIBLE);
 		thumbImageView.setVisibility(GONE);
 
 		fullscreenButton.setOnClickListener(mOnClickListener);
+		mLockButton.setOnClickListener(mOnClickListener);
 		thumbImageView.setOnClickListener(mOnClickListener);
 		backButton.setOnClickListener(mOnClickListener);
 		clarity.setOnClickListener(mOnClickListener);
@@ -129,6 +141,45 @@ public abstract class BasePlayerView extends FrameLayout implements PlayerUiCont
 
 	}
 
+	@Override
+	public boolean dispatchTouchEvent(MotionEvent ev) {
+
+		switch (ev.getAction()) {
+			case MotionEvent.ACTION_DOWN:
+			case MotionEvent.ACTION_UP:
+				Log.d(TAG,"Touch event");
+				if (mCurrentState == PlayerState.CURRENT_STATE_PLAYING || mCurrentScreenState == PlayerState.CURRENT_STATE_PAUSE) {
+					if (mCurrentScreenState == PlayerState.SCREEN_WINDOW_FULLSCREEN) {
+						mLockButton.setVisibility(VISIBLE);
+					}
+					if (mCurrentScreenLockState != PlayerState.SCREEN_WINDOW_LOCK) {
+						changeUiToPlayingShow();
+					}
+					startHideUiTimer();
+				}
+				break;
+		}
+		return super.dispatchTouchEvent(ev);
+	}
+
+	/**
+	 * 隐藏UI的延时任务
+	 */
+	private void startHideUiTimer() {
+		cancelHideUiTimer();
+		HIDE_CONTROL_VIEW_TIMER = new Timer();
+		mHideUiTimerTask = new HideUiTimerTask();
+		HIDE_CONTROL_VIEW_TIMER.schedule(mHideUiTimerTask, 2500);
+	}
+
+	private void cancelHideUiTimer() {
+		if (HIDE_CONTROL_VIEW_TIMER != null) {
+			HIDE_CONTROL_VIEW_TIMER.cancel();
+		}
+		if (mHideUiTimerTask != null) {
+			mHideUiTimerTask.cancel();
+		}
+	}
 
 	/**
 	 * 初始化自定义View视图
@@ -201,7 +252,10 @@ public abstract class BasePlayerView extends FrameLayout implements PlayerUiCont
 				Log.d(TAG, "首帧显示触发");
 				mCurrentState = PlayerState.CURRENT_STATE_PLAYING;
 				titleTextView.setText(mMediaTitle);
-				changeUiToPlayingShow();
+				if (mCurrentScreenLockState != PlayerState.SCREEN_WINDOW_LOCK) {
+					changeUiToPlayingShow();
+				}
+				startHideUiTimer();
 			}
 		});
 
@@ -359,7 +413,9 @@ public abstract class BasePlayerView extends FrameLayout implements PlayerUiCont
 				} else if (mCurrentState == PlayerState.CURRENT_STATE_PLAYING) {
 					pause();
 				} else if (mCurrentState == PlayerState.CURRENT_STATE_PAUSE) {
+					startHideUiTimer();
 					start();
+					//					ssad
 				} else if (mCurrentState == PlayerState.CURRENT_STATE_COMPLETE) {
 					play();
 				}
@@ -368,15 +424,10 @@ public abstract class BasePlayerView extends FrameLayout implements PlayerUiCont
 				if (mCurrentState == PlayerState.CURRENT_STATE_COMPLETE)
 					return;
 				if (mCurrentScreenState == PlayerState.SCREEN_WINDOW_FULLSCREEN) {
-					//quit fullscreen
-					//					backPress();
 					startWindowVertical();
 				} else {
-					//					startWindowFullscreen();
 					startWindowHorizontal();
 				}
-			} else if (vId == R.id.bt_stop) {
-				stop();
 			} else if (vId == R.id.back) {
 				if (mCurrentScreenState == PlayerState.SCREEN_WINDOW_FULLSCREEN) {
 					//回到竖屏
@@ -385,6 +436,8 @@ public abstract class BasePlayerView extends FrameLayout implements PlayerUiCont
 					((AppCompatActivity) getContext()).finish();
 				}
 
+			} else if (vId == R.id.ib_lock) {
+				changeLockUi();
 			}
 		}
 	};
@@ -416,11 +469,13 @@ public abstract class BasePlayerView extends FrameLayout implements PlayerUiCont
 		if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
 			Log.i(TAG, " 切换为竖屏");
 			mCurrentScreenState = PlayerState.SCREEN_WINDOW_NORMAL;
+			fullscreenButton.setImageResource(R.drawable.jz_enlarge);
 		}
 		//切换为横屏
 		else if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
 			Log.i(TAG, "切换为横屏");
 			mCurrentScreenState = PlayerState.SCREEN_WINDOW_FULLSCREEN;
+			fullscreenButton.setImageResource(R.drawable.jz_shrink);
 		}
 		onScreenOrientationChange();
 	}
@@ -438,13 +493,15 @@ public abstract class BasePlayerView extends FrameLayout implements PlayerUiCont
 			}
 			layoutParams.width = mScreenHeight;
 			layoutParams.height = mScreenWidth;
-
+			mLockButton.setImageResource(R.drawable.icon_unlock);
+			mLockButton.setVisibility(VISIBLE);
 		} else {
 			if (appCompActivity != null) {
 				appCompActivity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 			}
 			layoutParams.width = mInitialWidth;
 			layoutParams.height = mInitialHeight;
+			mLockButton.setVisibility(INVISIBLE);
 		}
 		setLayoutParams(layoutParams);
 
@@ -495,6 +552,50 @@ public abstract class BasePlayerView extends FrameLayout implements PlayerUiCont
 		if (mAliyunPlayer != null) {
 			mAliyunPlayer.stop();
 			mCurrentState = PlayerState.CURRENT_STATE_STOP;
+		}
+	}
+
+	@Override
+	public void changeLockUi() {
+
+		if (mCurrentScreenLockState == PlayerState.SCREEN_WINDOW_UNLOCK) {
+			mLockButton.setImageResource(R.drawable.icon_lock);
+			mCurrentScreenLockState = PlayerState.SCREEN_WINDOW_LOCK;
+			hideUiControls();
+		} else if (mCurrentScreenLockState == PlayerState.SCREEN_WINDOW_LOCK) {
+			mCurrentScreenLockState = PlayerState.SCREEN_WINDOW_UNLOCK;
+			mLockButton.setImageResource(R.drawable.icon_unlock);
+			if (mCurrentState == PlayerState.CURRENT_STATE_PLAYING) {
+				changeUiToPlayingShow();
+			} else if (mCurrentState == PlayerState.CURRENT_STATE_PAUSE) {
+				changeUiToPauseShow();
+			}else if (mCurrentState == PlayerState.CURRENT_STATE_COMPLETE){
+				changeUiToComplete();
+			}else if (mCurrentState == PlayerState.CURRENT_STATE_ERROR){
+				changeUiToError();
+			}
+		}
+	}
+
+	private void hideUi() {
+		mLockButton.setVisibility(INVISIBLE);
+		hideUiControls();
+	}
+
+	public class HideUiTimerTask extends TimerTask {
+
+		@Override
+		public void run() {
+
+			AppCompatActivity appCompActivity = PlayerUtils.getAppCompActivity(getContext());
+			if (appCompActivity != null && !appCompActivity.isDestroyed() && mCurrentState == PlayerState.CURRENT_STATE_PLAYING && !isMoving) {
+				post(new Runnable() {
+					@Override
+					public void run() {
+						hideUi();
+					}
+				});
+			}
 		}
 	}
 
