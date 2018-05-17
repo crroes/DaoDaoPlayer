@@ -33,7 +33,7 @@ import com.cross.fxwiz_widget_player.utils.PlayerUtils;
  * Created by cross on 2018/5/14.
  * <p>描述: 播放器基类
  * 需要在activity中调用的方法
- * 1. {@link #setUp(String, String)}
+ * 1. {@link #setUp(String[], String)}
  * 2. {@link #onPermissionSuccess()}
  * 3. {@link #onActivityConfigurationChanged(Configuration)}
  * 4.
@@ -44,7 +44,8 @@ public abstract class BasePlayerView extends FrameLayout implements PlayerUiCont
 	protected final String TAG = this.getClass().getName();
 	protected AliyunVodPlayer mAliyunPlayer;
 	private SurfaceView mSurfaceView;
-	protected String mMediaUrl;
+	protected String[] mMediaUrls;
+	protected int mMediaIndex;
 	protected String mMediaTitle;
 	private boolean isAutoPlay = false;
 	protected int mCurrentState = PlayerState.CURRENT_STATE_NORMAL;
@@ -134,12 +135,6 @@ public abstract class BasePlayerView extends FrameLayout implements PlayerUiCont
 	 */
 	private void init() {
 
-		PermissionUtils permission = new PermissionUtils(getContext(), true);
-		boolean hasPermission = permission.checkPermissions(PermissionUtils.REQUEST_STORAGE_PERMISSION, PermissionUtils.STORAGE_PERMISSION);
-		if (!hasPermission) {
-			//在没有权限的时候将申请权限并不做初始化，适配同意权限后播放需要在载体activity中的权限回调方法中调用onPermissionSuccess（）
-			return;
-		}
 		View.inflate(getContext(), getLayoutId(), this);
 		mAliyunPlayer = new AliyunVodPlayer(getContext());
 		mSurfaceView = findViewById(R.id.surfaceView);
@@ -205,6 +200,7 @@ public abstract class BasePlayerView extends FrameLayout implements PlayerUiCont
 				//首帧显示触发
 				Log.d(TAG, "首帧显示触发");
 				mCurrentState = PlayerState.CURRENT_STATE_PLAYING;
+				titleTextView.setText(mMediaTitle);
 				changeUiToPlayingShow();
 			}
 		});
@@ -224,6 +220,8 @@ public abstract class BasePlayerView extends FrameLayout implements PlayerUiCont
 				//播放正常完成时触发
 				Log.d(TAG, "播放正常完成时触发");
 				mCurrentState = PlayerState.CURRENT_STATE_COMPLETE;
+				mMediaIndex = mMediaIndex + 1 <= mMediaUrls.length ? mMediaIndex + 1 : 0;
+				play();
 			}
 		});
 
@@ -307,7 +305,7 @@ public abstract class BasePlayerView extends FrameLayout implements PlayerUiCont
 	 * 同意权限时重新初始化
 	 */
 	public void onPermissionSuccess() {
-		init();
+		play();
 	}
 
 	/**
@@ -317,12 +315,16 @@ public abstract class BasePlayerView extends FrameLayout implements PlayerUiCont
 	}
 
 
-	public void setUp(@NonNull String url, @Nullable String title) {
+	public void setUp(@NonNull String[] url, @Nullable String title) {
 
-		this.mMediaUrl = url;
+		this.mMediaUrls = url;
 		this.mMediaTitle = title;
-		titleTextView.setText(mMediaTitle);
-
+		PermissionUtils permission = new PermissionUtils(getContext(), true);
+		boolean hasPermission = permission.checkPermissions(PermissionUtils.REQUEST_STORAGE_PERMISSION, PermissionUtils.STORAGE_PERMISSION);
+		if (!hasPermission) {
+			//在没有权限的时候将申请权限并不做初始化，适配同意权限后播放需要在载体activity中的权限回调方法中调用onPermissionSuccess（）
+			return;
+		}
 		play();
 	}
 

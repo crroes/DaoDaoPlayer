@@ -59,6 +59,7 @@ public class MyVideoPlayerView extends BasePlayerView implements View.OnTouchLis
 	public static long LAST_GET_BATTERYLEVEL_TIME = 0;
 	public static int LAST_GET_BATTERYLEVEL_PERCENT = 70;
 
+
 	public MyVideoPlayerView(@NonNull Context context) {
 		super(context);
 	}
@@ -79,12 +80,10 @@ public class MyVideoPlayerView extends BasePlayerView implements View.OnTouchLis
 	@Override
 	protected void initChild() {
 
-		mSourceBuilder = new AliyunLocalSource.AliyunLocalSourceBuilder();
-
 		currentTimeTextView = findViewById(R.id.current);
 		totalTimeTextView = findViewById(R.id.total);
 		progressBar = findViewById(R.id.bottom_seek_progress);
-		textureViewContainer.setOnTouchListener(this);
+//		textureViewContainer.setOnTouchListener(this);
 		setSeekBarListener();
 	}
 
@@ -116,17 +115,17 @@ public class MyVideoPlayerView extends BasePlayerView implements View.OnTouchLis
 			@Override
 			public void onStopTrackingTouch(SeekBar seekBar) {
 				Log.w(TAG, "bottomProgress onStopTrackingTouch [" + this.hashCode() + "] ");
-//				onEvent(JZUserAction.ON_SEEK_POSITION);
+				//				onEvent(JZUserAction.ON_SEEK_POSITION);
 				ViewParent vpup = getParent();
 				while (vpup != null) {
 					vpup.requestDisallowInterceptTouchEvent(false);
 					vpup = vpup.getParent();
 				}
-				if (mCurrentState != PlayerState.CURRENT_STATE_PLAYING &&
-						mCurrentState != PlayerState.CURRENT_STATE_PAUSE) return;
+				if (mCurrentState != PlayerState.CURRENT_STATE_PLAYING && mCurrentState != PlayerState.CURRENT_STATE_PAUSE)
+					return;
 				long time = seekBar.getProgress() * mDuration / 10000;
 
-				mAliyunPlayer.seekTo((int)time);
+				mAliyunPlayer.seekTo((int) time);
 				changeUiToPreparing();
 				Log.w(TAG, "seekTo " + time + " [" + this.hashCode() + "] ");
 			}
@@ -145,7 +144,10 @@ public class MyVideoPlayerView extends BasePlayerView implements View.OnTouchLis
 	@Override
 	protected void setMediaSource() {
 
-		mSourceBuilder.setSource(mMediaUrl);
+		if (mSourceBuilder == null) {
+			mSourceBuilder = new AliyunLocalSource.AliyunLocalSourceBuilder();
+		}
+		mSourceBuilder.setSource(mMediaUrls[mMediaIndex]);
 		AliyunLocalSource mLocalSource = mSourceBuilder.build();
 		mAliyunPlayer.prepareAsync(mLocalSource);
 	}
@@ -246,8 +248,8 @@ public class MyVideoPlayerView extends BasePlayerView implements View.OnTouchLis
 							mSeekTimePosition = totalTimeDuration;
 						String seekTime = PlayerUtils.stringForTime(mSeekTimePosition);
 						String totalTime = PlayerUtils.stringForTime(totalTimeDuration);
-//                      TODO 进度dialog
-//						showProgressDialog(deltaX, seekTime, mSeekTimePosition, totalTime, totalTimeDuration);
+						//                      TODO 进度dialog
+						//						showProgressDialog(deltaX, seekTime, mSeekTimePosition, totalTime, totalTimeDuration);
 					}
 					//					if (mChangeVolume) {
 					//						deltaY = -deltaY;
