@@ -80,7 +80,7 @@ public abstract class BasePlayerFragment extends Fragment {
 	 * 全屏的返回处理
 	 */
 	public boolean isInterceptBackPressed() {
-		return mPlayerView == null || !mPlayerView.isInterceptBackPressed();
+		return mPlayerView != null && mPlayerView.isInterceptBackPressed();
 	}
 
 	/**

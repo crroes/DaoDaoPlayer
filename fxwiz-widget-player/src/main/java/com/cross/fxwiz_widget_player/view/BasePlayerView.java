@@ -44,7 +44,7 @@ import java.util.TimerTask;
  * 4.
  */
 
- abstract class BasePlayerView extends FrameLayout implements PlayerUiControls {
+abstract class BasePlayerView extends FrameLayout implements PlayerUiControls {
 
 	protected final String TAG = this.getClass().getName();
 	protected AliyunVodPlayer mAliyunPlayer;
@@ -211,6 +211,7 @@ import java.util.TimerTask;
 					mAliyunPlayer.setSurface(mSurfaceView.getHolder().getSurface());
 				}
 
+
 				Log.d(TAG, "AlivcPlayeron SurfaceCreated over.");
 			}
 
@@ -219,14 +220,7 @@ import java.util.TimerTask;
 				if (mAliyunPlayer != null) {
 					mAliyunPlayer.surfaceChanged();
 				}
-				if (mCurrentState == PlayerState.CURRENT_STATE_PAUSE) {
-					//暂停退到后台再重新打开
-					changeUiToPauseShow();
-				} else if (mCurrentState == PlayerState.CURRENT_STATE_PLAYING) {
-					//播放中退到后台再重新打开
-					start();
-					changeUiToPlayingClear();
-				}
+
 
 			}
 
@@ -280,8 +274,8 @@ import java.util.TimerTask;
 				//播放正常完成时触发
 				Log.d(TAG, "播放正常完成时触发");
 				mCurrentState = PlayerState.CURRENT_STATE_COMPLETE;
-//				mMediaIndex = mMediaIndex + 1 <= mMediaUrls.length ? mMediaIndex + 1 : 0;
-//				play();
+				//				mMediaIndex = mMediaIndex + 1 <= mMediaUrls.length ? mMediaIndex + 1 : 0;
+				//				play();
 				changeUiToComplete();
 			}
 		});
@@ -492,8 +486,8 @@ import java.util.TimerTask;
 	private void onScreenOrientationChange() {
 		AppCompatActivity appCompActivity = PlayerUtils.getAppCompActivity(getContext());
 		ViewGroup.LayoutParams layoutParams = mContainerView.getLayoutParams();
-		if (mCurrentScreenState == PlayerState.SCREEN_WINDOW_FULLSCREEN) {
 
+		if (mCurrentScreenState == PlayerState.SCREEN_WINDOW_FULLSCREEN) {
 			if (appCompActivity != null) {
 				appCompActivity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 			}
@@ -590,7 +584,7 @@ import java.util.TimerTask;
 
 	public boolean isInterceptBackPressed() {
 		if (mCurrentScreenState == PlayerState.SCREEN_WINDOW_FULLSCREEN) {
-			backButton.callOnClick();
+			fullscreenButton.performClick();
 			return true;
 		}
 		return false;

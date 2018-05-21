@@ -78,7 +78,7 @@ class MyVideoPlayerView extends MyLivePlayerView implements View.OnTouchListener
 		currentTimeTextView = (TextView) findViewById(R.id.current);
 		totalTimeTextView = (TextView) findViewById(R.id.total);
 		progressBar = (SeekBar) findViewById(R.id.bottom_seek_progress);
-//		textureViewContainer.setOnTouchListener(this);
+		//		textureViewContainer.setOnTouchListener(this);
 		setSeekBarListener();
 	}
 
@@ -341,8 +341,7 @@ class MyVideoPlayerView extends MyLivePlayerView implements View.OnTouchListener
 
 	@Override
 	public void changeUiToPlayingClear() {
-		updateStartImage();
-		startProgressTimer();
+		controlsUiChange(false);
 	}
 
 	@Override
@@ -354,18 +353,17 @@ class MyVideoPlayerView extends MyLivePlayerView implements View.OnTouchListener
 	@Override
 	public void changeUiToComplete() {
 		updateStartImage();
-
+		cancelProgressTimer();
 	}
 
 	@Override
 	public void changeUiToError() {
 		updateStartImage();
-
+		cancelProgressTimer();
 	}
 
 	@Override
 	public void hideUiControls() {
-
 		controlsUiChange(false);
 		cancelProgressTimer();
 	}
