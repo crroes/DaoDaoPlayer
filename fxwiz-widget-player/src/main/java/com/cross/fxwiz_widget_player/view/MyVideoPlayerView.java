@@ -30,7 +30,7 @@ import java.util.TimerTask;
  * <p>描述:视频器播放自定义view
  */
 
-public class MyVideoPlayerView extends MyLivePlayerView implements View.OnTouchListener {
+class MyVideoPlayerView extends MyLivePlayerView implements View.OnTouchListener {
 
 	protected Timer UPDATE_PROGRESS_TIMER;
 	private ProgressTimerTask mProgressTimerTask;

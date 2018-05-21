@@ -44,7 +44,7 @@ import java.util.TimerTask;
  * 4.
  */
 
-public abstract class BasePlayerView extends FrameLayout implements PlayerUiControls {
+ abstract class BasePlayerView extends FrameLayout implements PlayerUiControls {
 
 	protected final String TAG = this.getClass().getName();
 	protected AliyunVodPlayer mAliyunPlayer;
@@ -85,6 +85,9 @@ public abstract class BasePlayerView extends FrameLayout implements PlayerUiCont
 	public ViewGroup textureViewContainer;
 	public ViewGroup topContainer;
 	private HideUiTimerTask mHideUiTimerTask;
+
+	//全屏时使用到的参数
+	private ViewGroup mContainerView;
 
 
 	public BasePlayerView(@NonNull Context context) {
@@ -277,8 +280,9 @@ public abstract class BasePlayerView extends FrameLayout implements PlayerUiCont
 				//播放正常完成时触发
 				Log.d(TAG, "播放正常完成时触发");
 				mCurrentState = PlayerState.CURRENT_STATE_COMPLETE;
-				mMediaIndex = mMediaIndex + 1 <= mMediaUrls.length ? mMediaIndex + 1 : 0;
-				play();
+//				mMediaIndex = mMediaIndex + 1 <= mMediaUrls.length ? mMediaIndex + 1 : 0;
+//				play();
+				changeUiToComplete();
 			}
 		});
 
@@ -487,7 +491,7 @@ public abstract class BasePlayerView extends FrameLayout implements PlayerUiCont
 	 */
 	private void onScreenOrientationChange() {
 		AppCompatActivity appCompActivity = PlayerUtils.getAppCompActivity(getContext());
-		ViewGroup.LayoutParams layoutParams = getLayoutParams();
+		ViewGroup.LayoutParams layoutParams = mContainerView.getLayoutParams();
 		if (mCurrentScreenState == PlayerState.SCREEN_WINDOW_FULLSCREEN) {
 
 			if (appCompActivity != null) {
@@ -505,7 +509,7 @@ public abstract class BasePlayerView extends FrameLayout implements PlayerUiCont
 			layoutParams.height = mInitialHeight;
 			mLockButton.setVisibility(INVISIBLE);
 		}
-		setLayoutParams(layoutParams);
+		mContainerView.setLayoutParams(layoutParams);
 
 	}
 
@@ -590,6 +594,10 @@ public abstract class BasePlayerView extends FrameLayout implements PlayerUiCont
 			return true;
 		}
 		return false;
+	}
+
+	public void setContainerView(ViewGroup containerView) {
+		this.mContainerView = containerView;
 	}
 
 	public class HideUiTimerTask extends TimerTask {

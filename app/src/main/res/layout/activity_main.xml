@@ -7,7 +7,7 @@
     android:orientation="vertical"
     >
 
-    <com.cross.fxwiz_widget_player.view.MyVideoPlayerView
+    <FrameLayout
         android:id="@+id/player_view"
         android:layout_width="match_parent"
         android:layout_height="200dp"/>
