@@ -33,7 +33,7 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_alignParentBottom="true"
-        android:background="@drawable/jz_bottom_bg"
+        android:background="@drawable/player_bottom_bg"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:visibility="invisible">
@@ -60,8 +60,8 @@
             android:paddingLeft="12dp"
             android:paddingRight="12dp"
             android:paddingTop="8dp"
-            android:progressDrawable="@drawable/jz_bottom_seek_progress"
-            android:thumb="@drawable/jz_bottom_seek_thumb" />
+            android:progressDrawable="@drawable/player_bottom_seek_progress"
+            android:thumb="@drawable/player_bottom_seek_thumb" />
 
         <TextView
             android:id="@+id/total"
@@ -89,7 +89,7 @@
             android:paddingLeft="14dp"
             android:paddingRight="14dp"
             android:scaleType="centerInside"
-            android:src="@drawable/jz_enlarge" />
+            android:src="@drawable/player_enlarge" />
     </LinearLayout>
 
     <RelativeLayout
@@ -99,7 +99,7 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:background="@drawable/jz_title_bg"
+        android:background="@drawable/player_title_bg"
         android:gravity="center_vertical">
 
         <ImageView
@@ -111,7 +111,7 @@
             android:paddingStart="15dp"
             android:paddingEnd="15dp"
             android:scaleType="centerInside"
-            android:src="@drawable/jz_click_back_selector" />
+            android:src="@drawable/player_click_back_selector" />
 
         <TextView
             android:id="@+id/title"
@@ -144,7 +144,7 @@
         android:layout_height="36dp"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
-        android:indeterminateDrawable="@drawable/jz_loading"
+        android:indeterminateDrawable="@drawable/player_loading"
         android:visibility="invisible" />
 
     <LinearLayout
@@ -159,7 +159,7 @@
             android:id="@+id/start"
             android:layout_width="45dp"
             android:layout_height="45dp"
-            android:src="@drawable/jz_click_play_selector" />
+            android:src="@drawable/player_click_play_selector" />
     </LinearLayout>
 
 
@@ -198,7 +198,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
-            android:background="@drawable/retry_bg"
+            android:background="@drawable/player_retry_bg"
             android:paddingBottom="4dp"
             android:paddingLeft="9dp"
             android:paddingRight="9dp"

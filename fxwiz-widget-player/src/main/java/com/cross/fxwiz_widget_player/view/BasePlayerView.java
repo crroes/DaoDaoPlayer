@@ -38,7 +38,7 @@ import java.util.TimerTask;
  * Created by cross on 2018/5/14.
  * <p>描述: 播放器基类
  * 需要在activity中调用的方法
- * 1. {@link #setUp(String[], String)}
+ * 1. {@link #setUp(String, String...)}
  * 2. {@link #onPermissionSuccess()}
  * 3. {@link #onActivityConfigurationChanged(Configuration)}
  * 4.
@@ -107,18 +107,18 @@ public abstract class BasePlayerView extends FrameLayout implements PlayerUiCont
 	 */
 	private void initView() {
 
-		titleTextView = findViewById(R.id.title);//标题
-		backButton = findViewById(R.id.back);//返回箭头
-		startButton = findViewById(R.id.start);
-		fullscreenButton = findViewById(R.id.fullscreen);//全屏按钮
-		thumbImageView = findViewById(R.id.thumb);//首帧图片
-		loadingProgressBar = findViewById(R.id.loading);//加载进度动画
-		replayTextView = findViewById(R.id.replay_text);//重播text
-		clarity = findViewById(R.id.clarity);//透明？
-		mRetryBtn = findViewById(R.id.retry_btn);//点击重试
-		mRetryLayout = findViewById(R.id.retry_layout);//视频加载失败
-		mLockButton = findViewById(R.id.ib_lock); //锁
-		bottomContainer = findViewById(R.id.layout_bottom);//底部容器
+		titleTextView = (TextView) findViewById(R.id.title);//标题
+		backButton = (ImageView) findViewById(R.id.back);//返回箭头
+		startButton = (ImageView) findViewById(R.id.start);
+		fullscreenButton = (ImageView) findViewById(R.id.fullscreen);//全屏按钮
+		thumbImageView = (ImageView) findViewById(R.id.thumb);//首帧图片
+		loadingProgressBar = (ProgressBar) findViewById(R.id.loading);//加载进度动画
+		replayTextView = (TextView) findViewById(R.id.replay_text);//重播text
+		clarity = (TextView) findViewById(R.id.clarity);//透明？
+		mRetryBtn = (TextView) findViewById(R.id.retry_btn);//点击重试
+		mRetryLayout = (LinearLayout) findViewById(R.id.retry_layout);//视频加载失败
+		mLockButton = (ImageButton) findViewById(R.id.ib_lock); //锁
+		bottomContainer = (ViewGroup) findViewById(R.id.layout_bottom);//底部容器
 
 		loadingProgressBar.setVisibility(VISIBLE);
 		startButton.setVisibility(INVISIBLE);
@@ -134,8 +134,8 @@ public abstract class BasePlayerView extends FrameLayout implements PlayerUiCont
 			clarity.setOnClickListener(mOnClickListener);
 		}
 
-		textureViewContainer = findViewById(R.id.surface_container);
-		topContainer = findViewById(R.id.layout_top);
+		textureViewContainer = (ViewGroup) findViewById(R.id.surface_container);
+		topContainer = (ViewGroup) findViewById(R.id.layout_top);
 		textureViewContainer.setOnClickListener(mOnClickListener);//视图窗口的点击事件
 
 		mScreenWidth = getContext().getResources().getDisplayMetrics().widthPixels;
@@ -191,7 +191,7 @@ public abstract class BasePlayerView extends FrameLayout implements PlayerUiCont
 
 		View.inflate(getContext(), getLayoutId(), this);
 		mAliyunPlayer = new AliyunVodPlayer(getContext());
-		mSurfaceView = findViewById(R.id.surfaceView);
+		mSurfaceView = (SurfaceView) findViewById(R.id.surfaceView);
 
 		initView();
 
@@ -341,17 +341,17 @@ public abstract class BasePlayerView extends FrameLayout implements PlayerUiCont
 
 		if (mCurrentState == PlayerState.CURRENT_STATE_PLAYING) {
 			startButton.setVisibility(VISIBLE);
-			startButton.setImageResource(R.drawable.jz_click_pause_selector);
+			startButton.setImageResource(R.drawable.player_click_pause_selector);
 			replayTextView.setVisibility(INVISIBLE);
 		} else if (mCurrentState == PlayerState.CURRENT_STATE_ERROR) {
 			startButton.setVisibility(INVISIBLE);
 			replayTextView.setVisibility(INVISIBLE);
 		} else if (mCurrentState == PlayerState.CURRENT_STATE_COMPLETE) {
 			startButton.setVisibility(VISIBLE);
-			startButton.setImageResource(R.drawable.jz_click_replay_selector);
+			startButton.setImageResource(R.drawable.player_click_replay_selector);
 			replayTextView.setVisibility(VISIBLE);
 		} else {
-			startButton.setImageResource(R.drawable.jz_click_play_selector);
+			startButton.setImageResource(R.drawable.player_click_play_selector);
 			replayTextView.setVisibility(INVISIBLE);
 
 		}
@@ -438,7 +438,6 @@ public abstract class BasePlayerView extends FrameLayout implements PlayerUiCont
 				} else if (mCurrentScreenState == PlayerState.SCREEN_WINDOW_NORMAL && PlayerUtils.getAppCompActivity(getContext()) != null) {
 					((AppCompatActivity) getContext()).finish();
 				}
-
 			} else if (vId == R.id.ib_lock) {
 				changeLockUi();
 			}
@@ -472,13 +471,13 @@ public abstract class BasePlayerView extends FrameLayout implements PlayerUiCont
 		if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
 			Log.i(TAG, " 切换为竖屏");
 			mCurrentScreenState = PlayerState.SCREEN_WINDOW_NORMAL;
-			fullscreenButton.setImageResource(R.drawable.jz_enlarge);
+			fullscreenButton.setImageResource(R.drawable.player_enlarge);
 		}
 		//切换为横屏
 		else if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
 			Log.i(TAG, "切换为横屏");
 			mCurrentScreenState = PlayerState.SCREEN_WINDOW_FULLSCREEN;
-			fullscreenButton.setImageResource(R.drawable.jz_shrink);
+			fullscreenButton.setImageResource(R.drawable.player_shrink);
 		}
 		onScreenOrientationChange();
 	}
@@ -496,7 +495,7 @@ public abstract class BasePlayerView extends FrameLayout implements PlayerUiCont
 			}
 			layoutParams.width = mScreenHeight;
 			layoutParams.height = mScreenWidth;
-			mLockButton.setImageResource(R.drawable.icon_unlock);
+			mLockButton.setImageResource(R.drawable.player_icon_unlock);
 			mLockButton.setVisibility(VISIBLE);
 		} else {
 			if (appCompActivity != null) {
@@ -562,12 +561,12 @@ public abstract class BasePlayerView extends FrameLayout implements PlayerUiCont
 	public void changeLockUi() {
 
 		if (mCurrentScreenLockState == PlayerState.SCREEN_WINDOW_UNLOCK) {
-			mLockButton.setImageResource(R.drawable.icon_lock);
+			mLockButton.setImageResource(R.drawable.player_icon_lock);
 			mCurrentScreenLockState = PlayerState.SCREEN_WINDOW_LOCK;
 			hideUiControls();
 		} else if (mCurrentScreenLockState == PlayerState.SCREEN_WINDOW_LOCK) {
 			mCurrentScreenLockState = PlayerState.SCREEN_WINDOW_UNLOCK;
-			mLockButton.setImageResource(R.drawable.icon_unlock);
+			mLockButton.setImageResource(R.drawable.player_icon_unlock);
 			if (mCurrentState == PlayerState.CURRENT_STATE_PLAYING) {
 				changeUiToPlayingShow();
 			} else if (mCurrentState == PlayerState.CURRENT_STATE_PAUSE) {
@@ -583,6 +582,14 @@ public abstract class BasePlayerView extends FrameLayout implements PlayerUiCont
 	private void hideUi() {
 		mLockButton.setVisibility(INVISIBLE);
 		hideUiControls();
+	}
+
+	public boolean isInterceptBackPressed() {
+		if (mCurrentScreenState == PlayerState.SCREEN_WINDOW_FULLSCREEN) {
+			backButton.callOnClick();
+			return true;
+		}
+		return false;
 	}
 
 	public class HideUiTimerTask extends TimerTask {

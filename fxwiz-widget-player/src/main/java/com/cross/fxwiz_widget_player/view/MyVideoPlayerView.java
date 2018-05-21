@@ -75,9 +75,9 @@ public class MyVideoPlayerView extends MyLivePlayerView implements View.OnTouchL
 	@Override
 	protected void initChild() {
 
-		currentTimeTextView = findViewById(R.id.current);
-		totalTimeTextView = findViewById(R.id.total);
-		progressBar = findViewById(R.id.bottom_seek_progress);
+		currentTimeTextView = (TextView) findViewById(R.id.current);
+		totalTimeTextView = (TextView) findViewById(R.id.total);
+		progressBar = (SeekBar) findViewById(R.id.bottom_seek_progress);
 //		textureViewContainer.setOnTouchListener(this);
 		setSeekBarListener();
 	}
@@ -287,10 +287,10 @@ public class MyVideoPlayerView extends MyLivePlayerView implements View.OnTouchL
 	public void showProgressDialog(float deltaX, String seekTime, long seekTimePosition, String totalTime, long totalTimeDuration) {
 		if (mProgressDialog == null) {
 			View localView = LayoutInflater.from(getContext()).inflate(R.layout.layout_player_dialog_progress, null);
-			mDialogProgressBar = localView.findViewById(R.id.duration_progressbar);
-			mDialogSeekTime = localView.findViewById(R.id.tv_current);
-			mDialogTotalTime = localView.findViewById(R.id.tv_duration);
-			mDialogIcon = localView.findViewById(R.id.duration_image_tip);
+			mDialogProgressBar = (ProgressBar) localView.findViewById(R.id.duration_progressbar);
+			mDialogSeekTime = (TextView) localView.findViewById(R.id.tv_current);
+			mDialogTotalTime = (TextView) localView.findViewById(R.id.tv_duration);
+			mDialogIcon = (ImageView) localView.findViewById(R.id.duration_image_tip);
 			mProgressDialog = createDialogWithView(localView);
 		}
 		if (!mProgressDialog.isShowing()) {
@@ -301,9 +301,9 @@ public class MyVideoPlayerView extends MyLivePlayerView implements View.OnTouchL
 		mDialogTotalTime.setText(" / " + totalTime);
 		mDialogProgressBar.setProgress(totalTimeDuration <= 0 ? 0 : (int) (seekTimePosition * 100 / totalTimeDuration));
 		if (deltaX > 0) {
-			mDialogIcon.setBackgroundResource(R.drawable.jz_forward_icon);
+			mDialogIcon.setBackgroundResource(R.drawable.player_forward_icon);
 		} else {
-			mDialogIcon.setBackgroundResource(R.drawable.jz_backward_icon);
+			mDialogIcon.setBackgroundResource(R.drawable.player_backward_icon);
 		}
 		onUiToggleToClear();
 	}
