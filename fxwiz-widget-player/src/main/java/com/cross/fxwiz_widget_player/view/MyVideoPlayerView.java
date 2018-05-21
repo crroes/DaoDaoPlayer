@@ -166,7 +166,7 @@ class MyVideoPlayerView extends MyLivePlayerView implements View.OnTouchListener
 		if (id == R.id.surface_container) {
 			switch (event.getAction()) {
 				case MotionEvent.ACTION_DOWN:
-					Log.i(TAG, "onTouch surfaceContainer actionDown [" + this.hashCode() + "] ");
+//					Log.i(TAG, "onTouch surfaceContainer actionDown [" + this.hashCode() + "] ");
 					mTouchingProgressBar = true;
 
 					mDownX = x;
@@ -176,7 +176,7 @@ class MyVideoPlayerView extends MyLivePlayerView implements View.OnTouchListener
 					//					mChangeBrightness = false;
 					break;
 				case MotionEvent.ACTION_MOVE:
-					Log.i(TAG, "onTouch surfaceContainer actionMove [" + this.hashCode() + "] ");
+//					Log.i(TAG, "onTouch surfaceContainer actionMove [" + this.hashCode() + "] ");
 					float deltaX = x - mDownX;
 					float deltaY = y - mDownY;
 					float absDeltaX = Math.abs(deltaX);
@@ -255,7 +255,7 @@ class MyVideoPlayerView extends MyLivePlayerView implements View.OnTouchListener
 					//					}
 					break;
 				case MotionEvent.ACTION_UP:
-					Log.i(TAG, "onTouch surfaceContainer actionUp [" + this.hashCode() + "] ");
+//					Log.i(TAG, "onTouch surfaceContainer actionUp [" + this.hashCode() + "] ");
 					mTouchingProgressBar = false;
 					dismissProgressDialog();
 					//					dismissVolumeDialog();

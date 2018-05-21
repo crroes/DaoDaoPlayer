@@ -18,7 +18,7 @@ import com.cross.fxwiz_widget_player.utils.PermissionUtils;
 
 /**
  * Created by cross on 2018/5/21.
- * <p>描述:封装成fragment
+ * <p>描述:播放器封装成fragment
  */
 public abstract class BasePlayerFragment extends Fragment {
 
@@ -113,10 +113,5 @@ public abstract class BasePlayerFragment extends Fragment {
 	protected final View findViewById(int id) {
 		return mPlayerView.findViewById(id);
 	}
-
-	protected ViewGroup getContentView() {
-		return (ViewGroup) mPlayerView;
-	}
-
 
 }
