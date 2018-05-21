@@ -46,7 +46,7 @@ public abstract class BasePlayerFragment extends Fragment {
 	@Override
 	public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
-		if (TextUtils.isEmpty(mMediaUrl)) {
+		if (!TextUtils.isEmpty(mMediaUrl)) {
 			mPlayerView.setUp(mTitle, mMediaUrl);
 			mPlayerView.setContainerView(mContainerView);
 		}

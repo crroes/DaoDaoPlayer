@@ -210,7 +210,14 @@ abstract class BasePlayerView extends FrameLayout implements PlayerUiControls {
 				if (mAliyunPlayer != null) {
 					mAliyunPlayer.setSurface(mSurfaceView.getHolder().getSurface());
 				}
-
+				if (mCurrentState == PlayerState.CURRENT_STATE_PAUSE) {
+					//暂停退到后台再重新打开
+					changeUiToPauseShow();
+				} else if (mCurrentState == PlayerState.CURRENT_STATE_PLAYING) {
+					//播放中退到后台再重新打开
+					start();
+					changeUiToPlayingClear();
+				}
 
 				Log.d(TAG, "AlivcPlayeron SurfaceCreated over.");
 			}

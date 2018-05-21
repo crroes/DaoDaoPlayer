@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
 		String url5 = "http://mgcdn.vod.mgspcloud.migucloud.com/vi1/564.1FKb3V6h1KrgAaUN17OiH.32.ECl4Mx.mp4";
 		String url6 = "https://135zyv3.xw0371.com/20180513/dChjVePU/index.m3u8";
 		//		String[] mediaUrls = {url4,url3,url6,url5};//视频
-				String mediaUrls = url4;//视频
+				String mediaUrls = url3;//视频
 //		String[] mediaUrls = {"http://alhls.cdn.zhanqi.tv/zqlive/88682_pyqjm.m3u8"};//直播
 		mPlayerView.setUp("摄影之路", mediaUrls,mContainerView);
 	}

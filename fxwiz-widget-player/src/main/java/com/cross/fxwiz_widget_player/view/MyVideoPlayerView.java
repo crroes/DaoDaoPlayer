@@ -78,7 +78,7 @@ class MyVideoPlayerView extends MyLivePlayerView implements View.OnTouchListener
 		currentTimeTextView = (TextView) findViewById(R.id.current);
 		totalTimeTextView = (TextView) findViewById(R.id.total);
 		progressBar = (SeekBar) findViewById(R.id.bottom_seek_progress);
-		//		textureViewContainer.setOnTouchListener(this);
+//		textureViewContainer.setOnTouchListener(this);
 		setSeekBarListener();
 	}
 

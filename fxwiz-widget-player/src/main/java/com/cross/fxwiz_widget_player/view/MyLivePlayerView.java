@@ -13,7 +13,7 @@ import com.cross.fxwiz_widget_player.R;
  * <p>描述:直播播放器自定义view
  */
 
-class MyLivePlayerView extends BasePlayerView {
+ class MyLivePlayerView extends BasePlayerView {
 
 	AliyunLocalSource.AliyunLocalSourceBuilder mSourceBuilder;
 
