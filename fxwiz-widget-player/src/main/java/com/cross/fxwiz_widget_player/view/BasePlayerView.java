@@ -129,7 +129,6 @@ abstract class BasePlayerView extends FrameLayout implements PlayerUiControls {
 
 		fullscreenButton.setOnClickListener(mOnClickListener);
 		mLockButton.setOnClickListener(mOnClickListener);
-		thumbImageView.setOnClickListener(mOnClickListener);
 		backButton.setOnClickListener(mOnClickListener);
 		mRetryBtn.setOnClickListener(mOnClickListener);
 		startButton.setOnClickListener(mOnClickListener);
@@ -520,10 +519,11 @@ abstract class BasePlayerView extends FrameLayout implements PlayerUiControls {
 	 * 播放
 	 */
 	private void play() {
+		changeUiToPreparing();
+		thumbImageView.setVisibility(VISIBLE);
 		if (mAliyunPlayer != null) {
 			mAliyunPlayer.stop();
 		}
-
 		setMediaSource();
 		mAliyunPlayer.start();
 	}

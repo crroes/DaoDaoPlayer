@@ -62,15 +62,16 @@ public abstract class BasePlayerFragment extends Fragment {
 
 	/**
 	 * 设置参数
-	 * @param title 视频标题
-	 * @param mediaUrl 视频Url
+	 *
+	 * @param title         视频标题
+	 * @param mediaUrl      视频Url
 	 * @param containerView 播放器的容器 全屏需要此参数
 	 */
-	public void setUp(String title, String mediaUrl, ViewGroup containerView){
+	public void setUp(String title, String mediaUrl, ViewGroup containerView) {
 		this.mTitle = title;
 		this.mMediaUrl = mediaUrl;
 		this.mContainerView = containerView;
-		if (isCreated){
+		if (isCreated) {
 			mPlayerView.setUp(mTitle, mMediaUrl);
 			mPlayerView.setContainerView(mContainerView);
 		}

@@ -121,6 +121,7 @@ class MyVideoPlayerView extends MyLivePlayerView implements View.OnTouchListener
 				long time = seekBar.getProgress() * mDuration / 10000;
 
 				mAliyunPlayer.seekTo((int) time);
+				cancelProgressTimer();
 				changeUiToPreparing();
 				Log.w(TAG, "seekTo " + time + " [" + this.hashCode() + "] ");
 			}
@@ -335,6 +336,7 @@ class MyVideoPlayerView extends MyLivePlayerView implements View.OnTouchListener
 	public void changeUiToPlayingShow() {
 		updateStartImage();
 		loadingProgressBar.setVisibility(INVISIBLE);
+		thumbImageView.setVisibility(GONE);
 		controlsUiChange(true);
 		startProgressTimer();
 	}

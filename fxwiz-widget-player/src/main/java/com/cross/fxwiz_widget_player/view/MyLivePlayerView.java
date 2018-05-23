@@ -57,6 +57,7 @@ import com.cross.fxwiz_widget_player.R;
 	public void changeUiToPlayingShow() {
 		updateStartImage();
 		loadingProgressBar.setVisibility(INVISIBLE);
+		thumbImageView.setVisibility(GONE);
 		controlsUiChange(true);
 	}
 
