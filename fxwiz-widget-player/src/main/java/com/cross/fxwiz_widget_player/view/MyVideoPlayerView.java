@@ -45,7 +45,7 @@ class MyVideoPlayerView extends MyLivePlayerView implements View.OnTouchListener
 	protected TextView mDialogSeekTime;
 	protected TextView mDialogTotalTime;
 	protected ImageView mDialogIcon;
-	//TODO 下个版本添加音量控制
+	//后期添加音量控制
 	//	protected Dialog mVolumeDialog;
 	//	protected ProgressBar mDialogVolumeProgressBar;
 	//	protected TextView mDialogVolumeTextView;
@@ -78,7 +78,7 @@ class MyVideoPlayerView extends MyLivePlayerView implements View.OnTouchListener
 		currentTimeTextView = (TextView) findViewById(R.id.current);
 		totalTimeTextView = (TextView) findViewById(R.id.total);
 		progressBar = (SeekBar) findViewById(R.id.bottom_seek_progress);
-//		textureViewContainer.setOnTouchListener(this);
+		//		textureViewContainer.setOnTouchListener(this);
 		setSeekBarListener();
 	}
 
@@ -91,39 +91,44 @@ class MyVideoPlayerView extends MyLivePlayerView implements View.OnTouchListener
 			public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 				if (fromUser) {
 					//设置这个progres对应的时间，给textview
-					long duration = mDuration;
+					long duration = mMediaBean.getDuration();
 					currentTimeTextView.setText(PlayerUtils.stringForTime(progress * duration / 10000));
+					//					Log.i(TAG, "bottomProgress onProgressChanged [" + this.hashCode() + "] ");
 				}
 			}
 
 			@Override
 			public void onStartTrackingTouch(SeekBar seekBar) {
-				Log.i(TAG, "bottomProgress onStartTrackingTouch [" + this.hashCode() + "] ");
 				cancelProgressTimer();
+				mCurrentState = PlayerState.CURRENT_STATE_PREPARING;
 				ViewParent vpdown = getParent();
 				while (vpdown != null) {
 					vpdown.requestDisallowInterceptTouchEvent(true);
 					vpdown = vpdown.getParent();
 				}
+				Log.w(TAG, "bottomProgress onStartTrackingTouch [" + this.hashCode() + "] ");
 			}
 
 			@Override
 			public void onStopTrackingTouch(SeekBar seekBar) {
-				Log.w(TAG, "bottomProgress onStopTrackingTouch [" + this.hashCode() + "] ");
-				//				onEvent(JZUserAction.ON_SEEK_POSITION);
+				cancelProgressTimer();
 				ViewParent vpup = getParent();
 				while (vpup != null) {
 					vpup.requestDisallowInterceptTouchEvent(false);
 					vpup = vpup.getParent();
 				}
-				if (mCurrentState != PlayerState.CURRENT_STATE_PLAYING && mCurrentState != PlayerState.CURRENT_STATE_PAUSE)
-					return;
-				long time = seekBar.getProgress() * mDuration / 10000;
+				long time = seekBar.getProgress() * mMediaBean.getDuration() / 10000;
 
-				mAliyunPlayer.seekTo((int) time);
-				cancelProgressTimer();
+				mMediaBean.setCurrentPosition(time);
+				//毫秒
+				if (time < 1000) {
+					//处理无法定位到0的bug
+					mAliyunPlayer.replay();
+				} else {
+					mAliyunPlayer.seekTo((int) time);
+				}
 				changeUiToPreparing();
-				Log.w(TAG, "seekTo " + time + " [" + this.hashCode() + "] ");
+				Log.w(TAG, "seekTo onStopTrackingTouch time:" + PlayerUtils.stringForTime(time) + " time = " + time + " . [" + this.hashCode() + "] ");
 			}
 		});
 	}
@@ -137,11 +142,13 @@ class MyVideoPlayerView extends MyLivePlayerView implements View.OnTouchListener
 	 */
 	private void setProgressAndText(int progress, long position, long duration) {
 		if (!mTouchingProgressBar) {
-			if (progress != 0)
+			if (progress != 0) {
 				progressBar.setProgress(progress);
+			}
 		}
-		if (position != 0)
+		if (position != 0) {
 			currentTimeTextView.setText(PlayerUtils.stringForTime(position));
+		}
 		totalTimeTextView.setText(PlayerUtils.stringForTime(duration));
 
 	}
@@ -167,7 +174,7 @@ class MyVideoPlayerView extends MyLivePlayerView implements View.OnTouchListener
 		if (id == R.id.surface_container) {
 			switch (event.getAction()) {
 				case MotionEvent.ACTION_DOWN:
-//					Log.i(TAG, "onTouch surfaceContainer actionDown [" + this.hashCode() + "] ");
+					//					Log.i(TAG, "onTouch surfaceContainer actionDown [" + this.hashCode() + "] ");
 					mTouchingProgressBar = true;
 
 					mDownX = x;
@@ -177,7 +184,7 @@ class MyVideoPlayerView extends MyLivePlayerView implements View.OnTouchListener
 					//					mChangeBrightness = false;
 					break;
 				case MotionEvent.ACTION_MOVE:
-//					Log.i(TAG, "onTouch surfaceContainer actionMove [" + this.hashCode() + "] ");
+					//					Log.i(TAG, "onTouch surfaceContainer actionMove [" + this.hashCode() + "] ");
 					float deltaX = x - mDownX;
 					float deltaY = y - mDownY;
 					float absDeltaX = Math.abs(deltaX);
@@ -218,13 +225,13 @@ class MyVideoPlayerView extends MyLivePlayerView implements View.OnTouchListener
 						}
 					}
 					if (mChangePosition) {
-						long totalTimeDuration = mDuration;
+						long totalTimeDuration = mMediaBean.getDuration();
 						mSeekTimePosition = (int) (mGestureDownPosition + deltaX * totalTimeDuration / mScreenWidth);
 						if (mSeekTimePosition > totalTimeDuration)
 							mSeekTimePosition = totalTimeDuration;
 						String seekTime = PlayerUtils.stringForTime(mSeekTimePosition);
 						String totalTime = PlayerUtils.stringForTime(totalTimeDuration);
-						//                      TODO 进度dialog
+						//                      进度dialog
 						//						showProgressDialog(deltaX, seekTime, mSeekTimePosition, totalTime, totalTimeDuration);
 					}
 					//					if (mChangeVolume) {
@@ -256,17 +263,16 @@ class MyVideoPlayerView extends MyLivePlayerView implements View.OnTouchListener
 					//					}
 					break;
 				case MotionEvent.ACTION_UP:
-//					Log.i(TAG, "onTouch surfaceContainer actionUp [" + this.hashCode() + "] ");
+					//					Log.i(TAG, "onTouch surfaceContainer actionUp [" + this.hashCode() + "] ");
 					mTouchingProgressBar = false;
 					dismissProgressDialog();
 					//					dismissVolumeDialog();
 					//					dismissBrightnessDialog();
 					if (mChangePosition) {
-						//TODO unknown
 						//						onEvent(JZUserAction.ON_TOUCH_SCREEN_SEEK_POSITION);
 						//						JZMediaManager.seekTo(mSeekTimePosition);
-						long duration = mDuration;
-						int progress = (int) (mSeekTimePosition * 10000 / (duration == 0 ? 1 : duration));
+						long duration = mMediaBean.getDuration();
+						int progress = (int) (mSeekTimePosition * 100 / (duration == 0 ? 1 : duration));
 						progressBar.setProgress(progress);
 					}
 					if (mChangeVolume) {
@@ -327,49 +333,34 @@ class MyVideoPlayerView extends MyLivePlayerView implements View.OnTouchListener
 	}
 
 	@Override
-	public void changeUiToPreparing() {
-		startButton.setVisibility(INVISIBLE);
-		loadingProgressBar.setVisibility(VISIBLE);
-	}
-
-	@Override
 	public void changeUiToPlayingShow() {
-		updateStartImage();
-		loadingProgressBar.setVisibility(INVISIBLE);
-		thumbImageView.setVisibility(GONE);
-		controlsUiChange(true);
+		super.changeUiToPlayingShow();
 		startProgressTimer();
 	}
 
 	@Override
-	public void changeUiToPlayingClear() {
-		controlsUiChange(false);
+	public void changeUiToPreparing() {
+		super.changeUiToPreparing();
+		cancelProgressTimer();
 	}
 
 	@Override
 	public void changeUiToPauseShow() {
-		updateStartImage();
-		controlsUiChange(true);
+		super.changeUiToPauseShow();
+		cancelProgressTimer();
 	}
 
 	@Override
 	public void changeUiToComplete() {
-		updateStartImage();
+		super.changeUiToComplete();
 		cancelProgressTimer();
 	}
 
 	@Override
 	public void changeUiToError() {
-		updateStartImage();
+		super.changeUiToError();
 		cancelProgressTimer();
 	}
-
-	@Override
-	public void hideUiControls() {
-		controlsUiChange(false);
-		cancelProgressTimer();
-	}
-
 
 	private Dialog createDialogWithView(View localView) {
 
@@ -386,14 +377,24 @@ class MyVideoPlayerView extends MyLivePlayerView implements View.OnTouchListener
 		return dialog;
 	}
 
+	/**
+	 * 启动进度timer的情况
+	 * 1.进入播放状态
+	 */
 	private void startProgressTimer() {
-		Log.i(TAG, "startProgressTimer: " + " [" + this.hashCode() + "] ");
 		cancelProgressTimer();
 		UPDATE_PROGRESS_TIMER = new Timer();
 		mProgressTimerTask = new ProgressTimerTask();
 		UPDATE_PROGRESS_TIMER.schedule(mProgressTimerTask, 0, 300);
 	}
 
+	/**
+	 * 取消进度timer的情况
+	 * 1.暂停
+	 * 2.加载
+	 * 3.错误
+	 * 4.完成
+	 */
 	private void cancelProgressTimer() {
 		if (UPDATE_PROGRESS_TIMER != null) {
 			UPDATE_PROGRESS_TIMER.cancel();
@@ -409,13 +410,16 @@ class MyVideoPlayerView extends MyLivePlayerView implements View.OnTouchListener
 	private class ProgressTimerTask extends TimerTask {
 		@Override
 		public void run() {
-			if (mCurrentState == PlayerState.CURRENT_STATE_PLAYING || mCurrentState == PlayerState.CURRENT_STATE_PAUSE) {
+			if (mCurrentState == PlayerState.CURRENT_STATE_PLAYING) {
 				post(new Runnable() {
 					@Override
 					public void run() {
-						mCurrentPosition = mAliyunPlayer.getCurrentPosition();
-						int progress = (int) (mCurrentPosition * 10000 / (mDuration == 0 ? 1 : mDuration));
-						setProgressAndText(progress, mCurrentPosition, mDuration);
+
+						long currentPosition = mAliyunPlayer.getCurrentPosition();
+						mMediaBean.setCurrentPosition(currentPosition);
+						int progress = (int) (currentPosition * 10000 / (mMediaBean.getDuration() == 0 ? 1 : mMediaBean.getDuration()));
+						setProgressAndText(progress, currentPosition, mMediaBean.getDuration());
+//						Log.d(TAG, "currentPosition ProgressTimerTask "+currentPosition + " [" + this.hashCode() + "] ");
 					}
 				});
 			}

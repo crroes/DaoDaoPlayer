@@ -10,7 +10,7 @@ public class PlayerState {
 	//状态
 	public static final int CURRENT_STATE_ERROR = 0; //异常
 	public static final int CURRENT_STATE_NORMAL = 1; //正常
-	public static final int CURRENT_STATE_PREPARING = 2; //准备
+	public static final int CURRENT_STATE_PREPARING = 2; //准备中
 	public static final int CURRENT_STATE_PLAYING = 3; //播放中
 	public static final int CURRENT_STATE_PAUSE = 4; //暂停
 	public static final int CURRENT_STATE_STOP = 5; //停止

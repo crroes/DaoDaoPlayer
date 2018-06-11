@@ -3,7 +3,7 @@ package com.cross.fxwiz_widget_player.utils;
 import android.app.Activity;
 import android.content.Context;
 import android.content.ContextWrapper;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.view.ContextThemeWrapper;
 
 import java.util.Formatter;
@@ -45,10 +45,10 @@ public class PlayerUtils {
 	 * @param context context
 	 * @return AppCompatActivity if it's not null
 	 */
-	public static AppCompatActivity getAppCompActivity(Context context) {
+	public static FragmentActivity getAppCompActivity(Context context) {
 		if (context == null) return null;
-		if (context instanceof AppCompatActivity) {
-			return (AppCompatActivity) context;
+		if (context instanceof FragmentActivity) {
+			return (FragmentActivity) context;
 		} else if (context instanceof ContextThemeWrapper) {
 			return getAppCompActivity(((ContextThemeWrapper) context).getBaseContext());
 		}

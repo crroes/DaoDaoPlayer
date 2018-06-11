@@ -7,13 +7,14 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 
 import com.cross.fxwiz_widget_player.R;
+import com.cross.fxwiz_widget_player.utils.MediaBean;
 import com.cross.fxwiz_widget_player.utils.PermissionUtils;
 
 /**
@@ -23,10 +24,10 @@ import com.cross.fxwiz_widget_player.utils.PermissionUtils;
 public abstract class BasePlayerFragment extends Fragment {
 
 	private BasePlayerView mPlayerView;
-	private String mTitle;
-	private String mMediaUrl;
 	private ViewGroup mContainerView;
 	private boolean isCreated;
+	private OnPlayerStatusChangeListener mOnPlayerStatusChangeListener;
+	private MediaBean mMediaBean;
 
 	@Nullable
 	@Override
@@ -35,6 +36,7 @@ public abstract class BasePlayerFragment extends Fragment {
 		if (mPlayerView == null) {
 			mPlayerView = (BasePlayerView) inflater.inflate(getLayoutId(), container, false);
 		} else {
+
 			ViewParent parent = mPlayerView.getParent();
 			if (parent != null) {
 				((ViewGroup) parent).removeView(mPlayerView);
@@ -46,9 +48,8 @@ public abstract class BasePlayerFragment extends Fragment {
 	@Override
 	public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
-		if (!TextUtils.isEmpty(mMediaUrl)) {
-			mPlayerView.setUp(mTitle, mMediaUrl);
-			mPlayerView.setContainerView(mContainerView);
+		if (mMediaBean != null) {
+			setPlayerData();
 		}
 		isCreated = true;
 	}
@@ -63,17 +64,25 @@ public abstract class BasePlayerFragment extends Fragment {
 	/**
 	 * 设置参数
 	 *
-	 * @param title         视频标题
-	 * @param mediaUrl      视频Url
+	 * @param mediaBean     {@link MediaBean}
 	 * @param containerView 播放器的容器 全屏需要此参数
 	 */
-	public void setUp(String title, String mediaUrl, ViewGroup containerView) {
-		this.mTitle = title;
-		this.mMediaUrl = mediaUrl;
-		this.mContainerView = containerView;
+	public void setUp(@NonNull MediaBean mediaBean, ViewGroup containerView) {
+		mMediaBean = mediaBean;
+		mContainerView = containerView;
 		if (isCreated) {
-			mPlayerView.setUp(mTitle, mMediaUrl);
-			mPlayerView.setContainerView(mContainerView);
+			setPlayerData();
+		}
+	}
+
+	/**
+	 * 设置播放器数据
+	 */
+	private void setPlayerData() {
+		mPlayerView.setUp(mMediaBean);
+		mPlayerView.setContainerView(mContainerView);
+		if (mOnPlayerStatusChangeListener != null) {
+			mPlayerView.setOnPlayerStatusChangeListener(mOnPlayerStatusChangeListener);
 		}
 	}
 
@@ -92,7 +101,6 @@ public abstract class BasePlayerFragment extends Fragment {
 		super.onConfigurationChanged(newConfig);
 		mPlayerView.onActivityConfigurationChanged(newConfig);
 	}
-
 
 	/**
 	 * 5.0 权限适配
@@ -113,6 +121,82 @@ public abstract class BasePlayerFragment extends Fragment {
 	//提供给子类的findViewById方法
 	protected final View findViewById(int id) {
 		return mPlayerView.findViewById(id);
+	}
+
+	/**
+	 * 设置播放器状态监听
+	 *
+	 * @param listener OnPlayerStatusChangeListener
+	 */
+	public void setOnPlayerStatusChangeListener(OnPlayerStatusChangeListener listener) {
+		this.mOnPlayerStatusChangeListener = listener;
+		if (isCreated && mMediaBean != null) {
+			mPlayerView.setOnPlayerStatusChangeListener(mOnPlayerStatusChangeListener);
+		}
+	}
+
+
+	@Override
+	public void onPause() {
+		super.onPause();
+		mPlayerView.onContextPause();
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		mPlayerView.onContextResume();
+	}
+
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		mPlayerView.onContextDestroy();
+	}
+
+	@Override
+	public void onStop() {
+		super.onStop();
+		mPlayerView.onContextStop();
+	}
+
+	/**
+	 * 视频播放状态监听器
+	 */
+	public abstract static class OnPlayerStatusChangeListener {
+
+		private String TAG = "MyVideoPlayerView";
+
+		//开始
+		public void onStart() {
+			Log.i(TAG,"onStart()");
+		}
+
+		//继续播放
+		public void onContinue(long length) {
+			Log.i(TAG,"onContinue() length = "+ length);
+		}
+
+		//暂停
+		public void onPause(long length) {
+			Log.i(TAG,"onPause() length = "+ length);
+		}
+
+		//异常
+		public void onError(long length) {
+			Log.i(TAG,"onError() length = "+ length);
+		}
+
+		//停止
+		public void onStop(long length) {
+			Log.i(TAG,"onStop() length = "+ length);
+		}
+
+		//完成
+		public void onComplete() {
+			Log.i(TAG,"onComplete()");
+		}
+
 	}
 
 }
