@@ -1,6 +1,7 @@
 package com.cross.fxwiz_widget_player.view;
 
 import android.content.Context;
+import android.media.AudioManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
@@ -9,6 +10,7 @@ import android.util.Log;
 import com.aliyun.vodplayer.media.AliyunLocalSource;
 import com.cross.fxwiz_widget_player.R;
 import com.cross.fxwiz_widget_player.utils.PlayerState;
+import com.cross.fxwiz_widget_player.utils.PlayerUtils;
 
 /**
  * Created by cross on 2018/5/14.
@@ -38,6 +40,17 @@ class MyLivePlayerView extends BasePlayerView {
 	}
 
 	@Override
+	protected void cancelProgressTimer() {
+
+	}
+
+	@Override
+	protected void setPositionProgress(int progress, long seekTime, long totalTime) {
+		Log.d(TAG, "直播不支持滑动进度");
+	}
+
+
+	@Override
 	protected void setMediaSource() {
 
 		if (mSourceBuilder == null) {
@@ -47,6 +60,51 @@ class MyLivePlayerView extends BasePlayerView {
 		mSourceBuilder.setSource(mMediaBean.getVideoUrl());
 		AliyunLocalSource mLocalSource = mSourceBuilder.build();
 		mAliyunPlayer.prepareAsync(mLocalSource);
+	}
+
+	/**
+	 * 手势滑动音量
+	 *
+	 * @param deltaY 滑动每个间隔的距离
+	 */
+	@Override
+	public void doGestureVolume(float deltaY) {
+		deltaY = -deltaY;
+		int max = mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+		float deltaScreenY = max * deltaY * 2 / mScreenHeight;
+		mGestureCurrentVolume = mGestureCurrentVolume + deltaScreenY;
+		if (mGestureCurrentVolume > max) {
+			mGestureCurrentVolume = max;
+		}
+		mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, (int) mGestureCurrentVolume, 0);
+		//dialog中显示百分比
+		int volumePercent = (int) (mGestureCurrentVolume * 100 / max);
+		showVolumeDialog(volumePercent);
+	}
+
+	/**
+	 * 手势滑动亮度
+	 *
+	 * @param deltaY 滑动每个间隔的距离
+	 */
+	@Override
+	public void doGestureBrightness(float deltaY) {
+		deltaY = -deltaY;
+		float deltaScreenY = deltaY * 2 / (float) mScreenHeight;//滑动所占屏幕的百分比（采用1/2屏幕）
+		mGestureCurrentBrightness = mGestureCurrentBrightness + deltaScreenY;
+		if (mGestureCurrentBrightness > 1) {
+			//这和声音有区别，必须自己过滤一下负值
+			mGestureCurrentBrightness = 1;
+		} else if (mGestureCurrentBrightness <= 0) {
+			mGestureCurrentBrightness = 0.001f;
+		}
+		mWindowLayoutParams.screenBrightness = mGestureCurrentBrightness;
+
+		PlayerUtils.getAppCompActivity(getContext()).getWindow().setAttributes(mWindowLayoutParams);
+
+		//dialog中显示百分比
+		int brightnessPercent = (int) (mGestureCurrentBrightness * 100);
+		showBrightnessDialog(brightnessPercent);
 	}
 
 	/**
@@ -108,6 +166,7 @@ class MyLivePlayerView extends BasePlayerView {
 	@Override
 	public void changeUiToComplete() {
 		updateStartImage();
+		loadingProgressBar.setVisibility(INVISIBLE);
 		replayTextView.setVisibility(VISIBLE);
 		topContainer.setVisibility(VISIBLE);
 		bottomContainer.setVisibility(INVISIBLE);
@@ -145,20 +204,6 @@ class MyLivePlayerView extends BasePlayerView {
 			topContainer.setVisibility(INVISIBLE);
 			bottomContainer.setVisibility(INVISIBLE);
 			startButton.setVisibility(INVISIBLE);
-		}
-	}
-
-	//分享图标的显示与影藏
-	private void shareIconChange(boolean isShow) {
-
-		if (mCurrentScreenState == PlayerState.SCREEN_WINDOW_FULLSCREEN) {
-			shareImageView.setVisibility(GONE);
-		} else {
-			if (isShow) {
-				shareImageView.setVisibility(VISIBLE);
-			} else {
-				shareImageView.setVisibility(GONE);
-			}
 		}
 	}
 

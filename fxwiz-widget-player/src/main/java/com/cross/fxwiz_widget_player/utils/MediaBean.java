@@ -28,6 +28,7 @@ public class MediaBean {
 	}
 
 	public void setOnClickActionListener(OnClickActionListener onClickActionListener) {
+		isShareIconHide = false;
 		mOnClickActionListener = onClickActionListener;
 	}
 

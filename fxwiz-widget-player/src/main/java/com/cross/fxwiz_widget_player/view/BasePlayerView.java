@@ -1,19 +1,24 @@
 package com.cross.fxwiz_widget_player.view;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.media.AudioManager;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -29,6 +34,7 @@ import com.cross.fxwiz_widget_player.utils.IPlayerContext;
 import com.cross.fxwiz_widget_player.utils.MediaBean;
 import com.cross.fxwiz_widget_player.utils.OnClickNoMutiListener;
 import com.cross.fxwiz_widget_player.utils.PermissionUtils;
+import com.cross.fxwiz_widget_player.utils.PlayerGestureControls;
 import com.cross.fxwiz_widget_player.utils.PlayerState;
 import com.cross.fxwiz_widget_player.utils.PlayerUiControls;
 import com.cross.fxwiz_widget_player.utils.PlayerUtils;
@@ -41,7 +47,7 @@ import java.util.TimerTask;
  * <p>描述: 播放器基类
  */
 
-abstract class BasePlayerView extends FrameLayout implements PlayerUiControls, IPlayerContext {
+abstract class BasePlayerView extends FrameLayout implements PlayerUiControls, PlayerGestureControls, IPlayerContext, View.OnTouchListener {
 
 	protected final String TAG = this.getClass().getName();
 	protected AliyunVodPlayer mAliyunPlayer;
@@ -134,32 +140,12 @@ abstract class BasePlayerView extends FrameLayout implements PlayerUiControls, I
 
 		textureViewContainer = (ViewGroup) findViewById(R.id.surface_container);
 		topContainer = (ViewGroup) findViewById(R.id.layout_top);
-		textureViewContainer.setOnClickListener(mOnClickListener);//视图窗口的点击事件
+		textureViewContainer.setOnTouchListener(this);//视图窗口的点击事件
 
 		mScreenWidth = getContext().getResources().getDisplayMetrics().widthPixels;
 		mScreenHeight = getContext().getResources().getDisplayMetrics().heightPixels;
 		mAudioManager = (AudioManager) getContext().getSystemService(Context.AUDIO_SERVICE);
 
-	}
-
-	@Override
-	public boolean dispatchTouchEvent(MotionEvent ev) {
-
-		switch (ev.getAction()) {
-			case MotionEvent.ACTION_DOWN:
-			case MotionEvent.ACTION_UP:
-				if (mCurrentState == PlayerState.CURRENT_STATE_PLAYING || mCurrentScreenState == PlayerState.CURRENT_STATE_PAUSE) {
-					if (mCurrentScreenState == PlayerState.SCREEN_WINDOW_FULLSCREEN) {
-						lockButton.setVisibility(VISIBLE);
-					}
-					if (mCurrentScreenLockState != PlayerState.SCREEN_WINDOW_LOCK) {
-						changeUiToPlayingShow();
-					}
-					startHideUiTimer();
-				}
-				break;
-		}
-		return super.dispatchTouchEvent(ev);
 	}
 
 	/**
@@ -186,7 +172,6 @@ abstract class BasePlayerView extends FrameLayout implements PlayerUiControls, I
 					mAliyunPlayer.setSurface(mSurfaceView.getHolder().getSurface());
 				}
 
-				//TODO 如果是锁屏状态，继续播放并且
 
 				//1.正在播放中按home回到手机主屏幕重新进来继续播放
 				//2.暂停中按home回到手机主屏幕重新进来还是暂停状态
@@ -244,12 +229,13 @@ abstract class BasePlayerView extends FrameLayout implements PlayerUiControls, I
 
 				mCurrentState = PlayerState.CURRENT_STATE_PLAYING;
 
-				//如果有历史观看
+				//如果有历史观看 todo 逻辑移动到onPrepared（） 避免有历史时会听到声音在进行跳转
 				//1.不是直播
 				//2.时间不为0
 				//3.时间不等于播放器的当前播放时间（以秒为单位）
-				if (mMediaBean.getType() == MediaBean.MediaType.VIDEO && mMediaBean.getCurrentPosition() != 0 && mAliyunPlayer.getCurrentPosition() / 1000 != mMediaBean.getCurrentPosition() / 1000) {
-					//继续播放
+				if (mMediaBean.getType() == MediaBean.MediaType.VIDEO && mMediaBean.getDuration() > 0 && mMediaBean.getCurrentPosition() != 0 && mAliyunPlayer.getCurrentPosition() / 1000 != mMediaBean.getCurrentPosition() / 1000) {
+
+					//不是直播并且有历史时间 继续播放
 					mAliyunPlayer.seekTo((int) mMediaBean.getCurrentPosition());
 					if (mOnPlayerStatusChangeListener != null) {
 						mOnPlayerStatusChangeListener.onContinue(mMediaBean.getCurrentPosition());
@@ -274,7 +260,7 @@ abstract class BasePlayerView extends FrameLayout implements PlayerUiControls, I
 				//出错时处理，查看接口文档中的错误码和错误消息
 				Log.i(TAG, "出错时处理，查看接口文档中的错误码和错误消息" + "\n" + "arg0 = " + arg1 + "\n" + "arg1 = " + arg1 + "\n" + "msg = " + msg);
 				mCurrentState = PlayerState.CURRENT_STATE_ERROR;
-
+				mAliyunPlayer.stop();
 				if (mOnPlayerStatusChangeListener != null) {
 					mOnPlayerStatusChangeListener.onError(mMediaBean.getCurrentPosition());
 				}
@@ -308,11 +294,15 @@ abstract class BasePlayerView extends FrameLayout implements PlayerUiControls, I
 			public void onSeekComplete() {
 				//seek完成时触发
 				Log.i(TAG, "seek完成时触发 + playerTime ：" + PlayerUtils.stringForTime(mAliyunPlayer.getCurrentPosition()) + "\t mediaTime : " + PlayerUtils.stringForTime(mMediaBean.getCurrentPosition()));
-				if (mCurrentState == PlayerState.CURRENT_STATE_PAUSE) {
-					start();
+
+				//强制切换到播放状态、当处于后台时视频暂停(状态和正在播放切换后台一致)
+				mCurrentState = PlayerState.CURRENT_STATE_PLAYING;
+				changeUiToPlayingShow();
+				if (isContextBackground) {
+					//视频暂停
+					mAliyunPlayer.pause();
 				} else {
-					mCurrentState = PlayerState.CURRENT_STATE_PLAYING;
-					changeUiToPlayingShow();
+					mAliyunPlayer.start();
 				}
 
 			}
@@ -427,6 +417,346 @@ abstract class BasePlayerView extends FrameLayout implements PlayerUiControls, I
 		}
 	}
 
+	protected boolean mTouchingProgressBar;
+
+	protected Dialog mProgressDialog;
+	protected ProgressBar mDialogProgressBar;
+	protected TextView mDialogSeekTime;
+	protected TextView mDialogTotalTime;
+	protected ImageView mDialogIcon;
+	//音量、亮度控制
+	protected Dialog mVolumeDialog;
+	protected ProgressBar mDialogVolumeProgressBar;
+	protected TextView mDialogVolumeTextView;
+	protected ImageView mDialogVolumeImageView;
+	protected Dialog mBrightnessDialog;
+	protected ProgressBar mDialogBrightnessProgressBar;
+	protected TextView mDialogBrightnessTextView;
+
+	protected float mDownX;
+	protected float mDownY;
+	protected boolean mChangeVolume;
+	protected boolean mChangePosition;
+	protected boolean mChangeBrightness;
+	protected float mGestureCurrentVolume;//音量
+	protected float mGestureCurrentBrightness;//亮度
+	protected long mGestureSeekToPosition;//进度
+	protected WindowManager.LayoutParams mWindowLayoutParams;//窗口参数，设置亮度
+
+	public static final int THRESHOLD = 40;
+
+	@Override
+	public boolean onTouch(View v, MotionEvent event) {
+
+
+		float x = event.getX();
+		float y = event.getY();
+		int eventAction = event.getAction();
+
+		if (eventAction == MotionEvent.ACTION_UP && !mChangePosition && !mChangeVolume && !mChangeBrightness) {
+			//点击屏幕显示ui
+			onTouchUpUiChange();
+		}
+
+		int id = v.getId();
+		if (id == R.id.surface_container) {
+			switch (eventAction) {
+				case MotionEvent.ACTION_DOWN:
+					//Log.d(TAG, "onTouch surfaceContainer actionDown [" + this.hashCode() + "] ");
+					mTouchingProgressBar = true;//点击状态
+					mDownX = x;
+					mDownY = y;
+					mChangePosition = false;//改变进度
+					mChangeVolume = false;//改变音量
+					mChangeBrightness = false;//改变亮度
+					break;
+				case MotionEvent.ACTION_MOVE:
+
+					if (mCurrentScreenLockState == PlayerState.SCREEN_WINDOW_LOCK) {
+						//锁屏不作处理
+						break;
+					}
+
+					float deltaX = x - mDownX;
+					float deltaY = y - mDownY;
+					//Log.d(TAG, "onTouch surfaceContainer actionMove [ dx = " + deltaX + " ,dy = " + deltaY + "] ");
+					float absDeltaX = Math.abs(deltaX);
+					float absDeltaY = Math.abs(deltaY);
+
+					if (mCurrentState == PlayerState.CURRENT_STATE_ERROR || !mAliyunPlayer.isPlaying()) {
+						//CURRENT_STATE_ERROR状态下,不响应进度拖动事件
+						//播放器未初始化时，不响应进度拖动事件
+						return false;
+					}
+					if (mCurrentScreenState == PlayerState.SCREEN_WINDOW_FULLSCREEN) {
+						//全屏时开启滑动操作
+						if (!mChangePosition && !mChangeVolume && !mChangeBrightness) {
+							//首次手势（check角度位置判断这次事件）
+							if (absDeltaX > THRESHOLD || absDeltaY > THRESHOLD) {
+								//超过滑动临界值开始计算
+								if (absDeltaX >= THRESHOLD) {
+									// 水平移动 划动进度
+									// 取消播放进度timer
+									cancelProgressTimer();
+									mChangePosition = true;
+									mGestureSeekToPosition = mMediaBean.getCurrentPosition();
+								} else {
+									//如果y轴滑动距离超过设置的处理范围，那么进行滑动事件处理
+									if (mDownX < mScreenWidth * 0.5f) {//左侧改变亮度
+										mChangeBrightness = true;
+										mWindowLayoutParams = PlayerUtils.getAppCompActivity(getContext()).getWindow().getAttributes();
+										if (mWindowLayoutParams.screenBrightness < 0) {
+											try {
+												//Android系统的亮度值是0~255
+												mGestureCurrentBrightness = Settings.System.getInt(getContext().getContentResolver(), Settings.System.SCREEN_BRIGHTNESS) / 255f;
+												Log.d(TAG, "current system brightness: " + mGestureCurrentBrightness);
+											} catch (Settings.SettingNotFoundException e) {
+												e.printStackTrace();
+											}
+										} else {
+											mGestureCurrentBrightness = mWindowLayoutParams.screenBrightness;
+											Log.d(TAG, "current activity brightness: " + mGestureCurrentBrightness);
+										}
+									} else {//右侧改变声音
+										mChangeVolume = true;
+										mGestureCurrentVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+									}
+								}
+								//到达临界值触发事件，重新计算值
+								deltaX = 0;
+								deltaY = 0;
+							}
+						}
+					}
+
+					if (mChangePosition) {
+						//处理进度滑动
+						doGesturePosition(deltaX);
+					} else if (mChangeBrightness) {
+						//处理亮度滑动
+						doGestureBrightness(deltaY);
+					} else if (mChangeVolume) {
+						//处理音量滑动
+						doGestureVolume(deltaY);
+					}
+
+					if (mChangeBrightness || mChangePosition || mChangeVolume) {
+						//到达临界值后。重置x、y 处理每次的差值
+						mDownX = x;
+						mDownY = y;
+					}
+					break;
+				case MotionEvent.ACTION_UP:
+					//Log.d(TAG, "onTouch surfaceContainer actionUp [" + this.hashCode() + "] ");
+					mTouchingProgressBar = false;
+					dismissProgressDialog();
+					dismissVolumeDialog();
+					dismissBrightnessDialog();
+					if (mChangePosition && mMediaBean.getType() == MediaBean.MediaType.VIDEO) {
+
+						if (mGestureSeekToPosition == mMediaBean.getDuration()) {
+							//滑动结束时定位到前一秒
+							mAliyunPlayer.seekTo((int) mGestureSeekToPosition - 1000);
+						} else if (mGestureSeekToPosition <= 1000){
+							//滑动到开始重新播放,处理无法定位到0的bug
+							mMediaBean.setCurrentPosition(0);
+							mAliyunPlayer.replay();
+						}else {
+							mAliyunPlayer.seekTo((int) mGestureSeekToPosition);
+						}
+						long duration = mMediaBean.getDuration();
+						int progress = (int) (mGestureSeekToPosition * 10000 / (duration == 0 ? 1 : duration));
+						mCurrentState = PlayerState.CURRENT_STATE_PREPARING;
+						changeUiToPreparing();
+						setPositionProgress(progress, mGestureSeekToPosition, mMediaBean.getDuration());
+					}
+					break;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * 手势滑动进度
+	 *
+	 * @param deltaX 滑动的值
+	 */
+	@Override
+	public void doGesturePosition(float deltaX) {
+		//子类重写功能
+	}
+
+	/**
+	 * 点击屏幕切换ui
+	 */
+	private void onTouchUpUiChange() {
+
+		if (mCurrentState == PlayerState.CURRENT_STATE_PLAYING || mCurrentScreenState == PlayerState.CURRENT_STATE_PAUSE) {
+				//全屏状态下显示锁图标
+			if (mCurrentScreenState == PlayerState.SCREEN_WINDOW_FULLSCREEN) {
+				lockButton.setVisibility(GONE);//（这行代码不可删除***处理全屏滑动亮度后调Visible不显示控件的问题***）
+				lockButton.setVisibility(VISIBLE);
+			}
+			if (mCurrentScreenLockState != PlayerState.SCREEN_WINDOW_LOCK) {
+				//非锁屏状态下显示ui
+				changeUiToPlayingShow();
+			}
+			startHideUiTimer();
+		}
+
+	}
+
+	protected abstract void cancelProgressTimer();
+
+	/**
+	 * 滑动进度
+	 *
+	 * @param progress  进度百分比
+	 * @param seekTime  seekTo 时间
+	 * @param totalTime 总时间
+	 */
+	protected abstract void setPositionProgress(int progress, long seekTime, long totalTime);
+
+	/**
+	 * 滑动进度展示的dialog
+	 *
+	 * @param deltaX            x的位移量
+	 * @param seekTime          当前播放时间
+	 * @param totalTime         总时间
+	 * @param seekTimePosition  当前进度
+	 * @param totalTimeDuration 总进度
+	 */
+	public void showPositionProgressDialog(float deltaX, String seekTime, long seekTimePosition, String totalTime, long totalTimeDuration) {
+
+		if (mProgressDialog == null) {
+			View localView = LayoutInflater.from(getContext()).inflate(R.layout.layout_player_dialog_progress, null);
+			mDialogProgressBar = (ProgressBar) localView.findViewById(R.id.duration_progressbar);
+			mDialogSeekTime = (TextView) localView.findViewById(R.id.tv_current);
+			mDialogTotalTime = (TextView) localView.findViewById(R.id.tv_duration);
+			mDialogIcon = (ImageView) localView.findViewById(R.id.duration_image_tip);
+			mProgressDialog = createDialogWithView(localView);
+		}
+		if (!mProgressDialog.isShowing()) {
+			mProgressDialog.show();
+		}
+
+		mDialogSeekTime.setText(seekTime);
+		mDialogTotalTime.setText(" / " + totalTime);
+		mDialogProgressBar.setProgress(totalTimeDuration <= 0 ? 0 : (int) (seekTimePosition * 10000 / totalTimeDuration));
+		if (mGestureSeekToPosition > mMediaBean.getCurrentPosition()) {
+			mDialogIcon.setBackgroundResource(R.drawable.player_forward_icon);
+		} else {
+			mDialogIcon.setBackgroundResource(R.drawable.player_backward_icon);
+		}
+		onUiToggleToClear();
+	}
+
+	public void dismissProgressDialog() {
+		if (mProgressDialog != null) {
+			mProgressDialog.dismiss();
+		}
+	}
+
+	/**
+	 * 亮度的dialog
+	 *
+	 * @param brightnessPercent 百分比
+	 */
+	public void showBrightnessDialog(int brightnessPercent) {
+		if (mBrightnessDialog == null) {
+			View localView = LayoutInflater.from(getContext()).inflate(R.layout.player_dialog_brightness, null);
+			mDialogBrightnessTextView = (TextView) localView.findViewById(R.id.tv_brightness);
+			mDialogBrightnessProgressBar = (ProgressBar) localView.findViewById(R.id.brightness_progressbar);
+			mBrightnessDialog = createDialogWithView(localView);
+		}
+		if (!mBrightnessDialog.isShowing()) {
+			mBrightnessDialog.show();
+		}
+		if (brightnessPercent > 100) {
+			brightnessPercent = 100;
+		} else if (brightnessPercent < 0) {
+			brightnessPercent = 0;
+		}
+		mDialogBrightnessTextView.setText(brightnessPercent + "%");
+		mDialogBrightnessProgressBar.setProgress(brightnessPercent);
+		onUiToggleToClear();
+	}
+
+	public void dismissBrightnessDialog() {
+		if (mBrightnessDialog != null) {
+			mBrightnessDialog.dismiss();
+		}
+	}
+
+	//音量
+	public void showVolumeDialog(int volumePercent) {
+		if (mVolumeDialog == null) {
+			View localView = LayoutInflater.from(getContext()).inflate(R.layout.player_dialog_volume, null);
+			mDialogVolumeImageView = (ImageView) localView.findViewById(R.id.volume_image_tip);
+			mDialogVolumeTextView = (TextView) localView.findViewById(R.id.tv_volume);
+			mDialogVolumeProgressBar = (ProgressBar) localView.findViewById(R.id.volume_progressbar);
+			mVolumeDialog = createDialogWithView(localView);
+		}
+		if (!mVolumeDialog.isShowing()) {
+			mVolumeDialog.show();
+		}
+		if (volumePercent <= 0) {
+			mDialogVolumeImageView.setBackgroundResource(R.drawable.player_close_volume);
+		} else {
+			mDialogVolumeImageView.setBackgroundResource(R.drawable.player_add_volume);
+		}
+		if (volumePercent > 100) {
+			volumePercent = 100;
+		} else if (volumePercent < 0) {
+			volumePercent = 0;
+		}
+		mDialogVolumeTextView.setText(volumePercent + "%");
+		mDialogVolumeProgressBar.setProgress(volumePercent);
+		onUiToggleToClear();
+	}
+
+	public void dismissVolumeDialog() {
+		if (mVolumeDialog != null) {
+			mVolumeDialog.dismiss();
+		}
+	}
+
+	private Dialog createDialogWithView(View localView) {
+
+		Dialog dialog = new Dialog(getContext(), R.style.player_style_dialog_progress);
+		dialog.setContentView(localView);
+		Window window = dialog.getWindow();
+		window.addFlags(Window.FEATURE_ACTION_BAR);
+		window.addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL);
+		window.addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+		window.setLayout(-2, -2);
+		WindowManager.LayoutParams localLayoutParams = window.getAttributes();
+		localLayoutParams.gravity = Gravity.CENTER;
+		window.setAttributes(localLayoutParams);
+		return dialog;
+	}
+
+
+	/**
+	 * 切换ui到原模式
+	 * 1.进度、音量、亮度的滑动之后
+	 * 2.解锁后
+	 */
+	public void onUiToggleToClear() {
+
+		lockButton.setVisibility(INVISIBLE);
+		if (mCurrentState == PlayerState.CURRENT_STATE_PREPARING) {
+			changeUiToPreparing();
+		} else if (mCurrentState == PlayerState.CURRENT_STATE_PLAYING) {
+			changeUiToPlayingClear();
+		} else if (mCurrentState == PlayerState.CURRENT_STATE_PAUSE) {
+			changeUiToPauseShow();
+		} else if (mCurrentState == PlayerState.CURRENT_STATE_COMPLETE) {
+			changeUiToComplete();
+		}
+	}
+
+
 	/**
 	 * 监听器
 	 */
@@ -449,9 +779,7 @@ abstract class BasePlayerView extends FrameLayout implements PlayerUiControls, I
 					play();
 				}
 			} else if (vId == R.id.fullscreen) {
-				//点击全屏切换
-				if (mCurrentState == PlayerState.CURRENT_STATE_COMPLETE)
-					return;
+
 				if (mCurrentScreenState == PlayerState.SCREEN_WINDOW_FULLSCREEN) {
 					startWindowVertical();
 				} else {
@@ -524,12 +852,19 @@ abstract class BasePlayerView extends FrameLayout implements PlayerUiControls, I
 		FragmentActivity appCompActivity = PlayerUtils.getAppCompActivity(getContext());
 		ViewGroup.LayoutParams layoutParams = mContainerView.getLayoutParams();
 
+
+		//切换屏幕时改变屏幕宽高
+		mScreenHeight = getContext().getResources().getDisplayMetrics().heightPixels;
+		mScreenWidth = getContext().getResources().getDisplayMetrics().widthPixels;
+
+		Log.i(TAG, "mScreenWidth = " + mScreenWidth + " mScreenHeight = " + mScreenHeight);
 		if (mCurrentScreenState == PlayerState.SCREEN_WINDOW_FULLSCREEN) {
 			if (appCompActivity != null) {
 				appCompActivity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 			}
-			layoutParams.width = mScreenHeight;
-			layoutParams.height = mScreenWidth;
+
+			layoutParams.width = mScreenWidth;
+			layoutParams.height = mScreenHeight;
 			lockButton.setImageResource(R.drawable.player_icon_unlock);
 			lockButton.setVisibility(VISIBLE);
 			shareImageView.setVisibility(GONE);

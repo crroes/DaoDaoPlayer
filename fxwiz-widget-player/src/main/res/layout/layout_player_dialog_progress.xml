@@ -50,7 +50,7 @@
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
             android:layout_marginTop="8dp"
-            android:max="100"
+            android:max="10000"
             android:progressDrawable="@drawable/player_dialog_progress" />
     </LinearLayout>
 </LinearLayout>

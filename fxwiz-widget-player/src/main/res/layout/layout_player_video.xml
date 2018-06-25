@@ -3,10 +3,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@android:color/black"
-                android:descendantFocusability="blocksDescendants">
+    >
 
     <FrameLayout
         android:id="@+id/surface_container"
+        android:clickable="true"
+        android:focusable="true"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -21,7 +23,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:background="#000000"
         android:scaleType="fitCenter"
@@ -79,5 +80,6 @@
 
     <include layout="@layout/item_player_error"/>
 
-    <include layout="@layout/item_player_video_buttom"/>
+    <include layout="@layout/item_player_video_bottom"/>
+
 </RelativeLayout>

@@ -3,10 +3,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@android:color/black"
-                android:descendantFocusability="blocksDescendants">
+    >
 
     <FrameLayout
         android:id="@+id/surface_container"
+        android:clickable="true"
+        android:focusable="true"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -27,7 +29,7 @@
         android:visibility="gone"
         />
 
-   <include layout="@layout/item_player_header"/>
+    <include layout="@layout/item_player_header"/>
 
     <LinearLayout
         android:id="@+id/layout_bottom"
@@ -41,19 +43,19 @@
 
         <View
             android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="1dp"/>
+            android:layout_height="1dp"
+            android:layout_weight="1"/>
+
         <TextView
             android:id="@+id/clarity"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:clickable="true"
             android:paddingLeft="20dp"
-            android:text="clarity"
             android:textAlignment="center"
             android:textColor="#ffffff"
             android:visibility="gone"
             />
+
         <ImageView
             android:id="@+id/fullscreen"
             android:layout_width="52.5dp"
@@ -61,7 +63,7 @@
             android:paddingLeft="14dp"
             android:paddingRight="14dp"
             android:scaleType="centerInside"
-            android:src="@drawable/player_enlarge" />
+            android:src="@drawable/player_enlarge"/>
     </LinearLayout>
 
     <ImageButton
@@ -69,10 +71,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
+        android:background="#00000000"
         android:padding="20dp"
         android:visibility="invisible"
-        android:background="#00000000"
         />
+
     <ProgressBar
         android:id="@+id/loading"
         android:layout_width="36dp"
@@ -80,7 +83,7 @@
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:indeterminateDrawable="@drawable/player_loading"
-        android:visibility="invisible" />
+        android:visibility="invisible"/>
 
     <LinearLayout
         android:id="@+id/start_layout"
@@ -94,7 +97,7 @@
             android:id="@+id/start"
             android:layout_width="45dp"
             android:layout_height="45dp"
-            android:src="@drawable/player_click_play_selector" />
+            android:src="@drawable/player_click_play_selector"/>
     </LinearLayout>
 
 
@@ -108,7 +111,7 @@
         android:text="@string/replay"
         android:textColor="#ffffff"
         android:textSize="12sp"
-        android:visibility="invisible" />
+        android:visibility="invisible"/>
 
-   <include layout="@layout/item_player_error"/>
+    <include layout="@layout/item_player_error"/>
 </RelativeLayout>

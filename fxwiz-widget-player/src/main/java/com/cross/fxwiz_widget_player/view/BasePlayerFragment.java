@@ -165,7 +165,7 @@ public abstract class BasePlayerFragment extends Fragment {
 	 */
 	public abstract static class OnPlayerStatusChangeListener {
 
-		private String TAG = "MyVideoPlayerView";
+		private String TAG = "OnPlayerStatusChangeListener";
 
 		//开始
 		public void onStart() {
