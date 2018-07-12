@@ -1,10 +1,11 @@
-package com.cross.aliyunlivedemo;
+package com.cross.daodaoplayer;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.cross.fxwiz_widget_player.utils.MediaBean;
 import com.cross.fxwiz_widget_player.view.BasePlayerFragment;
 import com.cross.fxwiz_widget_player.view.MyVideoPlayerFragment;
 
@@ -31,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
 		//		mPlayerView.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 		//		frameLayout.addView(mPlayerView);
 		mPlayerView = new MyVideoPlayerFragment();
+
 		ViewGroup mContainerView = findViewById(R.id.player_view);
 		getSupportFragmentManager().beginTransaction().replace(R.id.player_view,mPlayerView).commit();
 
@@ -41,7 +43,9 @@ public class MainActivity extends AppCompatActivity {
 		//		String[] mediaUrls = {url4,url3,url6,url5};//视频
 				String mediaUrls = url3;//视频
 //		String[] mediaUrls = {"http://alhls.cdn.zhanqi.tv/zqlive/88682_pyqjm.m3u8"};//直播
-		mPlayerView.setUp("摄影之路", mediaUrls,mContainerView);
+		MediaBean mediaBean = new MediaBean("摄影之路", url5, MediaBean.MediaType.VIDEO);
+
+		mPlayerView.setUp(mediaBean,mContainerView);
 	}
 
 

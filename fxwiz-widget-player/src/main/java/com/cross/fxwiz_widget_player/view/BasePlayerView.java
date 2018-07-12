@@ -528,7 +528,6 @@ abstract class BasePlayerView extends FrameLayout implements PlayerUiControls, P
 							}
 						}
 					}
-
 					if (mChangePosition) {
 						//处理进度滑动
 						doGesturePosition(deltaX);

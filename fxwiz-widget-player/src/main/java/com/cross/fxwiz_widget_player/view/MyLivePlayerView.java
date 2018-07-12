@@ -201,9 +201,10 @@ class MyLivePlayerView extends BasePlayerView {
 			bottomContainer.setVisibility(VISIBLE);
 			startButton.setVisibility(VISIBLE);
 		} else {
-			topContainer.setVisibility(INVISIBLE);
-			bottomContainer.setVisibility(INVISIBLE);
-			startButton.setVisibility(INVISIBLE);
+			//处理锁后第一次解锁无法直接触发控制ui
+			topContainer.setVisibility(GONE);
+			bottomContainer.setVisibility(GONE);
+			startButton.setVisibility(GONE);
 		}
 	}
 

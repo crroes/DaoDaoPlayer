@@ -1,4 +1,4 @@
-package com.cross.aliyunlivedemo;
+package com.cross.daodaoplayer;
 
 import org.junit.Test;
 

@@ -1,4 +1,4 @@
-package com.cross.aliyunlivedemo;
+package com.cross.daodaoplayer;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
