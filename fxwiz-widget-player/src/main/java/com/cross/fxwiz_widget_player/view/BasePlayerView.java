@@ -364,6 +364,7 @@ abstract class BasePlayerView extends FrameLayout implements PlayerUiControls, P
 				startButton.setImageResource(R.drawable.player_click_play_selector);
 				break;
 			case PlayerState.CURRENT_STATE_COMPLETE:
+			case PlayerState.CURRENT_STATE_STOP:
 				startButton.setVisibility(VISIBLE);
 				startButton.setImageResource(R.drawable.player_click_replay_selector);
 				break;
@@ -559,8 +560,9 @@ abstract class BasePlayerView extends FrameLayout implements PlayerUiControls, P
 					if (mChangePosition && mMediaBean.getType() == MediaBean.MediaType.VIDEO) {
 
 						if (mGestureSeekToPosition == mMediaBean.getDuration()) {
-							//滑动结束时定位到前一秒
-							mGestureSeekToPosition = mGestureSeekToPosition - 1000;
+							//滑动结束时手动完成
+							seekToComplete();
+							break;
 						} else if (mGestureSeekToPosition <= 1000) {
 							//滑动到开始重新播放,处理无法定位到0的bug
 							mMediaBean.setCurrentPosition(0);
@@ -610,6 +612,16 @@ abstract class BasePlayerView extends FrameLayout implements PlayerUiControls, P
 			startHideUiTimer();
 		}
 
+	}
+
+	/**
+	 * 快进到结束
+	 */
+	protected void seekToComplete(){
+		mCurrentState = PlayerState.CURRENT_STATE_COMPLETE;
+		mAliyunPlayer.stop();
+		changeUiToComplete();
+		mMediaBean.setCurrentPosition(0);
 	}
 
 	protected abstract void cancelProgressTimer();
@@ -781,7 +793,7 @@ abstract class BasePlayerView extends FrameLayout implements PlayerUiControls, P
 					pause();
 				} else if (mCurrentState == PlayerState.CURRENT_STATE_PAUSE) {
 					start();
-				} else if (mCurrentState == PlayerState.CURRENT_STATE_COMPLETE) {
+				} else if (mCurrentState == PlayerState.CURRENT_STATE_COMPLETE || mCurrentState == PlayerState.CURRENT_STATE_STOP) {
 					play();
 				}
 			} else if (vId == R.id.fullscreen) {

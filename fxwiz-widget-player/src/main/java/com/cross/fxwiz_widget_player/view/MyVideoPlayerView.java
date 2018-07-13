@@ -96,12 +96,14 @@ class MyVideoPlayerView extends MyLivePlayerView implements View.OnTouchListener
 				//毫秒
 				if (time < 1000) {
 					//处理无法定位到0的bug
+					mMediaBean.setCurrentPosition(0);
 					mAliyunPlayer.replay();
 					Log.w(TAG, "seekTo start");
 					return;
 				} else if (seekBar.getProgress() == 10000) {
 					//快进到结束
-					time = time - 1000;
+					seekToComplete();
+					return;
 				}
 				mAliyunPlayer.seekTo((int) time);
 				mMediaBean.setCurrentPosition(time);
