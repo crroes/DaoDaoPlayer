@@ -392,7 +392,7 @@ abstract class BasePlayerView extends FrameLayout implements PlayerUiControls, P
 	 * 设置播放源
 	 *
 	 * @param mediaBean {@link MediaBean}
-	 * @param Fragment 用于申请权限
+	 * @param Fragment  用于申请权限
 	 */
 	public void setUp(@NonNull MediaBean mediaBean, Fragment Fragment) {
 
@@ -491,46 +491,48 @@ abstract class BasePlayerView extends FrameLayout implements PlayerUiControls, P
 						//播放器未初始化时，不响应进度拖动事件
 						return false;
 					}
-					if (mCurrentScreenState == PlayerState.SCREEN_WINDOW_FULLSCREEN) {
-						//全屏时开启滑动操作
-						if (!mChangePosition && !mChangeVolume && !mChangeBrightness) {
-							//首次手势（check角度位置判断这次事件）
-							if (absDeltaX > THRESHOLD || absDeltaY > THRESHOLD) {
-								//超过滑动临界值开始计算
-								if (absDeltaX >= THRESHOLD) {
-									// 水平移动 划动进度
-									// 取消播放进度timer
-									cancelProgressTimer();
-									mChangePosition = true;
-									mGestureSeekToPosition = mMediaBean.getCurrentPosition();
-								} else {
-									//如果y轴滑动距离超过设置的处理范围，那么进行滑动事件处理
-									if (mDownX < mScreenWidth * 0.5f) {//左侧改变亮度
-										mChangeBrightness = true;
-										mWindowLayoutParams = PlayerUtils.getAppCompActivity(getContext()).getWindow().getAttributes();
-										if (mWindowLayoutParams.screenBrightness < 0) {
-											try {
-												//Android系统的亮度值是0~255
-												mGestureCurrentBrightness = Settings.System.getInt(getContext().getContentResolver(), Settings.System.SCREEN_BRIGHTNESS) / 255f;
-												Log.d(TAG, "current system brightness: " + mGestureCurrentBrightness);
-											} catch (Settings.SettingNotFoundException e) {
-												e.printStackTrace();
-											}
-										} else {
-											mGestureCurrentBrightness = mWindowLayoutParams.screenBrightness;
-											Log.d(TAG, "current activity brightness: " + mGestureCurrentBrightness);
+					if (mCurrentScreenState != PlayerState.SCREEN_WINDOW_FULLSCREEN) {
+						//非全屏时不开启滑动操作
+						break;
+					}
+					if (!mChangePosition && !mChangeVolume && !mChangeBrightness) {
+						//首次手势（check角度位置判断这次事件）
+						if (absDeltaX > THRESHOLD || absDeltaY > THRESHOLD) {
+							//超过滑动临界值开始计算
+							if (absDeltaX >= THRESHOLD) {
+								// 水平移动 划动进度
+								// 取消播放进度timer
+								cancelProgressTimer();
+								mChangePosition = true;
+								mGestureSeekToPosition = mMediaBean.getCurrentPosition();
+							} else {
+								//如果y轴滑动距离超过设置的处理范围，那么进行滑动事件处理
+								if (mDownX < mScreenWidth * 0.5f) {//左侧改变亮度
+									mChangeBrightness = true;
+									mWindowLayoutParams = PlayerUtils.getAppCompActivity(getContext()).getWindow().getAttributes();
+									if (mWindowLayoutParams.screenBrightness < 0) {
+										try {
+											//Android系统的亮度值是0~255
+											mGestureCurrentBrightness = Settings.System.getInt(getContext().getContentResolver(), Settings.System.SCREEN_BRIGHTNESS) / 255f;
+											Log.d(TAG, "current system brightness: " + mGestureCurrentBrightness);
+										} catch (Settings.SettingNotFoundException e) {
+											e.printStackTrace();
 										}
-									} else {//右侧改变声音
-										mChangeVolume = true;
-										mGestureCurrentVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+									} else {
+										mGestureCurrentBrightness = mWindowLayoutParams.screenBrightness;
+										Log.d(TAG, "current activity brightness: " + mGestureCurrentBrightness);
 									}
+								} else {//右侧改变声音
+									mChangeVolume = true;
+									mGestureCurrentVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
 								}
-								//到达临界值触发事件，重新计算值
-								deltaX = 0;
-								deltaY = 0;
 							}
+							//到达临界值触发事件，重新计算值
+							deltaX = 0;
+							deltaY = 0;
 						}
 					}
+
 					if (mChangePosition) {
 						//处理进度滑动
 						doGesturePosition(deltaX);
@@ -559,7 +561,7 @@ abstract class BasePlayerView extends FrameLayout implements PlayerUiControls, P
 						if (mGestureSeekToPosition == mMediaBean.getDuration()) {
 							//滑动结束时定位到前一秒
 							mGestureSeekToPosition = mGestureSeekToPosition - 1000;
-						} else if (mGestureSeekToPosition <= 1000){
+						} else if (mGestureSeekToPosition <= 1000) {
 							//滑动到开始重新播放,处理无法定位到0的bug
 							mMediaBean.setCurrentPosition(0);
 							mAliyunPlayer.replay();
@@ -596,7 +598,7 @@ abstract class BasePlayerView extends FrameLayout implements PlayerUiControls, P
 	private void onTouchUpUiChange() {
 
 		if (mCurrentState == PlayerState.CURRENT_STATE_PLAYING || mCurrentScreenState == PlayerState.CURRENT_STATE_PAUSE) {
-				//全屏状态下显示锁图标
+			//全屏状态下显示锁图标
 			if (mCurrentScreenState == PlayerState.SCREEN_WINDOW_FULLSCREEN) {
 				lockButton.setVisibility(GONE);//（这行代码不可删除***处理全屏滑动亮度后调Visible不显示控件的问题***）
 				lockButton.setVisibility(VISIBLE);
