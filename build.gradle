@@ -16,9 +16,14 @@ buildscript {
 }
 
 allprojects {
+
     repositories {
         google()
         jcenter()
+
+        flatDir {
+            dirs '../fxwiz-widget-player/libs'
+        }
     }
 }
 

@@ -3,16 +3,19 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 26
     defaultConfig {
-        applicationId "com.cross.aliyunlivedemo"
-        minSdkVersion 23
+        applicationId "com.cross.daodaoplayer"
+        minSdkVersion 19
         targetSdkVersion 26
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        manifestPlaceholders = [
+                JPUSH_PKGNAME : "com.cross.daodaoplayer",
+        ]
     }
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -29,9 +32,6 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
 
-    compile(name: 'AlivcReporter-1.1', ext: 'aar')
-    compile(name: 'AlivcPlayer-3.4.3', ext: 'aar')
-    compile(name: 'AliyunVodPlayer-3.4.3', ext: 'aar')
-    compile(name: 'AliyunVodPlayer-3.4.3', ext: 'aar')
     implementation project(':fxwiz-widget-player')
+    implementation project(':fxwiz-widget-jpush')
 }

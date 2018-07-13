@@ -2,7 +2,7 @@ apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion '25.0.0'
+    buildToolsVersion '26.0.2'
     defaultConfig {
         minSdkVersion 19
         targetSdkVersion 23
@@ -19,17 +19,12 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-    repositories{
-        flatDir{dirs 'libs'}
-    }
 
 }
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-
     compile 'com.android.support:appcompat-v7:25.0.0'
-
     compile(name: 'AlivcReporter-1.1', ext: 'aar')
     compile(name: 'AlivcPlayer-3.4.3', ext: 'aar')
     compile(name: 'AliyunVodPlayer-3.4.3', ext: 'aar')
