@@ -19,25 +19,25 @@ import java.util.List;
  */
 public class PermissionUtils {
 
-	private Context mContext;
+	private Activity mActivity;
 	private boolean isActivity;
 	private Fragment mFragment;
 
 	//存储权限
-	public static int REQUEST_STORAGE_PERMISSION = 101;
+	public static int REQUEST_STORAGE_PERMISSION_CODE = 101;
 	public final static String[] STORAGE_PERMISSION = new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
 	private List<String> PermissionsVessel = new ArrayList<>();
 
 
-	public PermissionUtils(Context context, boolean isActivity) {
-		mContext = context;
-		this.isActivity = isActivity;
+	public PermissionUtils(Activity activity) {
+		mActivity = activity;
+		this.isActivity = true;
 	}
 
 	public PermissionUtils(Fragment fragment) {
-		mContext = fragment.getContext();
 		this.mFragment = fragment;
+		this.isActivity = false;
 	}
 
 	// 判断权限集合
@@ -52,7 +52,7 @@ public class PermissionUtils {
 
 		if (PermissionsVessel.size() != 0) {
 			if (isActivity) {
-				openPermission((Activity) mContext, PermissionsVessel.toArray(new String[PermissionsVessel.size()]), requestCode);
+				openPermission(mActivity, PermissionsVessel.toArray(new String[PermissionsVessel.size()]), requestCode);
 			} else {
 				openPermission(mFragment, PermissionsVessel.toArray(new String[PermissionsVessel.size()]), requestCode);
 			}
@@ -65,7 +65,8 @@ public class PermissionUtils {
 
 	// 判断是否缺少权限
 	private boolean checkPermission(String permission) {
-		int checkSelfPermission = ContextCompat.checkSelfPermission(mContext, permission);
+		Context context = mActivity == null ? mFragment.getContext() : mActivity;
+		int checkSelfPermission = ContextCompat.checkSelfPermission(context, permission);
 		return checkSelfPermission == PackageManager.PERMISSION_GRANTED;
 	}
 

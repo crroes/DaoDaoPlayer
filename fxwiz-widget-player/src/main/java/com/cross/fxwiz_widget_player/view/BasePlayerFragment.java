@@ -79,7 +79,7 @@ public abstract class BasePlayerFragment extends Fragment {
 	 * 设置播放器数据
 	 */
 	private void setPlayerData() {
-		mPlayerView.setUp(mMediaBean);
+		mPlayerView.setUp(mMediaBean,this);
 		mPlayerView.setContainerView(mContainerView);
 		if (mOnPlayerStatusChangeListener != null) {
 			mPlayerView.setOnPlayerStatusChangeListener(mOnPlayerStatusChangeListener);
@@ -108,7 +108,7 @@ public abstract class BasePlayerFragment extends Fragment {
 	@Override
 	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-		if (requestCode == PermissionUtils.REQUEST_STORAGE_PERMISSION) {
+		if (requestCode == PermissionUtils.REQUEST_STORAGE_PERMISSION_CODE) {
 			for (int i = 0; i < permissions.length; i++) {
 				if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
 					return;
@@ -169,32 +169,32 @@ public abstract class BasePlayerFragment extends Fragment {
 
 		//开始
 		public void onStart() {
-			Log.i(TAG,"onStart()");
+			Log.i(TAG, "onStart()");
 		}
 
 		//继续播放
 		public void onContinue(long length) {
-			Log.i(TAG,"onContinue() length = "+ length);
+			Log.i(TAG, "onContinue() length = " + length);
 		}
 
 		//暂停
 		public void onPause(long length) {
-			Log.i(TAG,"onPause() length = "+ length);
+			Log.i(TAG, "onPause() length = " + length);
 		}
 
 		//异常
 		public void onError(long length) {
-			Log.i(TAG,"onError() length = "+ length);
+			Log.i(TAG, "onError() length = " + length);
 		}
 
 		//停止
 		public void onStop(long length) {
-			Log.i(TAG,"onStop() length = "+ length);
+			Log.i(TAG, "onStop() length = " + length);
 		}
 
 		//完成
 		public void onComplete() {
-			Log.i(TAG,"onComplete()");
+			Log.i(TAG, "onComplete()");
 		}
 
 	}

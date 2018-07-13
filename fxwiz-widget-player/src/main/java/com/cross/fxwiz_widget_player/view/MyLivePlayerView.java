@@ -138,6 +138,7 @@ class MyLivePlayerView extends BasePlayerView {
 		}
 		updateStartImage();
 		thumbImageView.setVisibility(GONE);
+		errorRetryLayout.setVisibility(GONE);
 		controlsUiChange(true);
 		startHideUiTimer();
 	}

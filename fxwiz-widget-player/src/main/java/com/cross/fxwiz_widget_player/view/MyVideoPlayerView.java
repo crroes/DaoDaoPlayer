@@ -67,7 +67,7 @@ class MyVideoPlayerView extends MyLivePlayerView implements View.OnTouchListener
 					//设置这个progres对应的时间，给textview
 					long duration = mMediaBean.getDuration();
 					currentTimeTextView.setText(PlayerUtils.stringForTime(progress * duration / 10000));
-					//					Log.d(TAG, "bottomProgress onProgressChanged [" + this.hashCode() + "] ");
+					//Log.d(TAG, "bottomProgress onProgressChanged [" + this.hashCode() + "] ");
 				}
 			}
 
@@ -93,17 +93,18 @@ class MyVideoPlayerView extends MyLivePlayerView implements View.OnTouchListener
 				}
 				long time = seekBar.getProgress() * mMediaBean.getDuration() / 10000;
 
-				mMediaBean.setCurrentPosition(time);
 				//毫秒
 				if (time < 1000) {
 					//处理无法定位到0的bug
 					mAliyunPlayer.replay();
+					Log.w(TAG, "seekTo start");
+					return;
 				} else if (seekBar.getProgress() == 10000) {
 					//快进到结束
-					mAliyunPlayer.seekTo((int) time - 1000);
-				} else {
-					mAliyunPlayer.seekTo((int) time);
+					time = time - 1000;
 				}
+				mAliyunPlayer.seekTo((int) time);
+				mMediaBean.setCurrentPosition(time);
 				changeUiToPreparing();
 				Log.w(TAG, "seekTo onStopTrackingTouch time:" + PlayerUtils.stringForTime(time) + " time = " + time + " . [" + this.hashCode() + "] ");
 			}
@@ -140,7 +141,10 @@ class MyVideoPlayerView extends MyLivePlayerView implements View.OnTouchListener
 
 		long totalTimeDuration = mMediaBean.getDuration();//总时长
 
-		mGestureSeekToPosition = (int) (mGestureSeekToPosition + 2 * deltaX * totalTimeDuration / mScreenWidth);// 1/2的屏幕即可划100%
+		long remainTime = totalTimeDuration - mMediaBean.getCurrentPosition();
+		long fixedValue = 1000 * 60 * 6; //6分钟
+		fixedValue = remainTime >= fixedValue ? fixedValue : remainTime;
+		mGestureSeekToPosition = (int) (mGestureSeekToPosition + deltaX * fixedValue / mScreenWidth);//滑动一屏幕的值
 		if (mGestureSeekToPosition > totalTimeDuration)
 			mGestureSeekToPosition = totalTimeDuration;
 		String seekTime = PlayerUtils.stringForTime(mGestureSeekToPosition);

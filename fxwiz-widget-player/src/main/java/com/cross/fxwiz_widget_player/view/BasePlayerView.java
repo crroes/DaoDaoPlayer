@@ -8,6 +8,7 @@ import android.media.AudioManager;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -391,12 +392,14 @@ abstract class BasePlayerView extends FrameLayout implements PlayerUiControls, P
 	 * 设置播放源
 	 *
 	 * @param mediaBean {@link MediaBean}
+	 * @param Fragment 用于申请权限
 	 */
-	public void setUp(@NonNull MediaBean mediaBean) {
+	public void setUp(@NonNull MediaBean mediaBean, Fragment Fragment) {
 
 		mMediaBean = mediaBean;
-		PermissionUtils permission = new PermissionUtils(getContext(), true);
-		boolean hasPermission = permission.checkPermissions(PermissionUtils.REQUEST_STORAGE_PERMISSION, PermissionUtils.STORAGE_PERMISSION);
+
+		PermissionUtils permission = new PermissionUtils(Fragment);
+		boolean hasPermission = permission.checkPermissions(PermissionUtils.REQUEST_STORAGE_PERMISSION_CODE, PermissionUtils.STORAGE_PERMISSION);
 		if (!hasPermission) {
 			//在没有权限的时候将申请权限并不做初始化，适配同意权限后播放需要在载体activity中的权限回调方法中调用onPermissionSuccess（）
 			return;
@@ -555,14 +558,16 @@ abstract class BasePlayerView extends FrameLayout implements PlayerUiControls, P
 
 						if (mGestureSeekToPosition == mMediaBean.getDuration()) {
 							//滑动结束时定位到前一秒
-							mAliyunPlayer.seekTo((int) mGestureSeekToPosition - 1000);
+							mGestureSeekToPosition = mGestureSeekToPosition - 1000;
 						} else if (mGestureSeekToPosition <= 1000){
 							//滑动到开始重新播放,处理无法定位到0的bug
 							mMediaBean.setCurrentPosition(0);
 							mAliyunPlayer.replay();
-						}else {
-							mAliyunPlayer.seekTo((int) mGestureSeekToPosition);
+							break;
 						}
+
+						mAliyunPlayer.seekTo((int) mGestureSeekToPosition);
+						mMediaBean.setCurrentPosition(mGestureSeekToPosition);
 						long duration = mMediaBean.getDuration();
 						int progress = (int) (mGestureSeekToPosition * 10000 / (duration == 0 ? 1 : duration));
 						mCurrentState = PlayerState.CURRENT_STATE_PREPARING;
@@ -967,7 +972,6 @@ abstract class BasePlayerView extends FrameLayout implements PlayerUiControls, P
 	@Override
 	public void onContextPause() {
 		Log.i(TAG, "onContextPause");
-
 	}
 
 	@Override

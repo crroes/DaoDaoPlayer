@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
 		//		String[] mediaUrls = {url4,url3,url6,url5};//视频
 				String mediaUrls = url3;//视频
 //		String[] mediaUrls = {"http://alhls.cdn.zhanqi.tv/zqlive/88682_pyqjm.m3u8"};//直播
-		MediaBean mediaBean = new MediaBean("摄影之路", url5, MediaBean.MediaType.VIDEO);
+		MediaBean mediaBean = new MediaBean("摄影之路", url4, MediaBean.MediaType.VIDEO);
 
 		mPlayerView.setUp(mediaBean,mContainerView);
 	}
