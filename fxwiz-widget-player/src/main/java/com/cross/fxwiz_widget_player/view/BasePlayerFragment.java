@@ -103,7 +103,7 @@ public abstract class BasePlayerFragment extends Fragment {
 	}
 
 	/**
-	 * 5.0 权限适配
+	 * 6.0 权限适配
 	 */
 	@Override
 	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
