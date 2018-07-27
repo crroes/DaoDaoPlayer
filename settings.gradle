@@ -1,1 +1,1 @@
-include ':app', ':fxwiz-widget-player', ':fxwiz-widget-jpush'
+include ':app', ':fxwiz-widget-player', ':fxwiz-widget-jpush', ':fxwiz-widget-image'

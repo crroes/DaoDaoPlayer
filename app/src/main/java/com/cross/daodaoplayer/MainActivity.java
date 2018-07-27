@@ -2,12 +2,16 @@ package com.cross.daodaoplayer;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.cross.fxwiz_widget_player.utils.MediaBean;
 import com.cross.fxwiz_widget_player.view.BasePlayerFragment;
 import com.cross.fxwiz_widget_player.view.MyVideoPlayerFragment;
+import com.image.selector.view.CustomPhotoSelectFragment;
+
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -27,25 +31,38 @@ public class MainActivity extends AppCompatActivity {
 
 	private void initView() {
 
-		//		FrameLayout frameLayout = findViewById(R.id.fl_group);
-		//		mPlayerView = new MyVideoPlayerView(this);
-		//		mPlayerView.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-		//		frameLayout.addView(mPlayerView);
+		initPhotoSelectView();
 		mPlayerView = new MyVideoPlayerFragment();
 
 		ViewGroup mContainerView = findViewById(R.id.player_view);
-		getSupportFragmentManager().beginTransaction().replace(R.id.player_view,mPlayerView).commit();
+		getSupportFragmentManager().beginTransaction().replace(R.id.player_view, mPlayerView).commit();
 
 		String url3 = "http://117.131.17.50/depository_yf/asset/zhengshi/1002/068/349/1002068349/media/1002068349_1003692265_91.mp4";
 		String url4 = "http://mgcdn.vod.mgspcloud.migucloud.com/vi1/564.1Uh7pg7SJ2TXwnmHsGjiGs.32.TpwNk5.mp4";
 		String url5 = "http://mgcdn.vod.mgspcloud.migucloud.com/vi1/564.1FKb3V6h1KrgAaUN17OiH.32.ECl4Mx.mp4";
 		String url6 = "https://135zyv3.xw0371.com/20180513/dChjVePU/index.m3u8";
-		//		String[] mediaUrls = {url4,url3,url6,url5};//视频
-				String mediaUrls = url3;//视频
-//		String[] mediaUrls = {"http://alhls.cdn.zhanqi.tv/zqlive/88682_pyqjm.m3u8"};//直播
+		//String[] mediaUrls = {url4,url3,url6,url5};//视频
+		String mediaUrls = url3;//视频
+		//String[] mediaUrls = {"http://alhls.cdn.zhanqi.tv/zqlive/88682_pyqjm.m3u8"};//直播
 		MediaBean mediaBean = new MediaBean("摄影之路", url4, MediaBean.MediaType.VIDEO);
 
-		mPlayerView.setUp(mediaBean,mContainerView);
+		mPlayerView.setUp(mediaBean, mContainerView);
+	}
+
+	/**
+	 * 初始化图片选择器
+	 */
+	private void initPhotoSelectView() {
+		findViewById(R.id.fl_photo_select).setVisibility(View.VISIBLE);
+		CustomPhotoSelectFragment photoSelectFragment = new MyCustomPhotoSelectFragment();
+		photoSelectFragment.setOnImageListChangeListener(new CustomPhotoSelectFragment.OnImageListChangeListener() {
+			@Override
+			public void OnImageChange(List<String> imageLists) {
+
+			}
+		});
+		getSupportFragmentManager().beginTransaction().replace(R.id.fl_photo_select, photoSelectFragment).commit();
+
 	}
 
 
