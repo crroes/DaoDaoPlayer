@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="85dp"
+    android:layout_gravity="center"
+    android:layout_margin="2dp">
+
+    <com.image.selector.view.SquareImageView
+        android:id="@+id/iv_image"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="#010101"
+        android:scaleType="centerCrop" />
+    <ImageView
+        android:id="@+id/iv_image_cut"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_gravity="top|end"
+        android:paddingTop="3dp"
+        android:paddingEnd="3dp"
+        android:paddingStart="15dp"
+        android:paddingBottom="15dp"
+        android:src="@mipmap/icon_photo_cut"/>
+
+</FrameLayout>

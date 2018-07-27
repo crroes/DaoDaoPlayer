@@ -1,0 +1,16 @@
+<resources>
+
+    <style name="dialog_photo_select_anim">
+        <item name="android:windowEnterAnimation">@anim/dialog_photo_enter</item>
+        <item name="android:windowExitAnimation">@anim/dialog_photo_exit</item>
+    </style>
+
+    <style name="PhotoSelectDialog" parent="android:style/Theme.Dialog">
+        <item name="android:windowFrame">@null</item><!--边框 -->
+        <item name="android:windowIsFloating">true</item><!--是否浮现在activity之上 -->
+        <item name="android:windowIsTranslucent">true</item><!--半透明 -->
+        <item name="android:windowNoTitle">true</item><!--无标题 -->
+        <item name="android:windowBackground">@android:color/white</item><!--背景透明 -->
+    </style>
+
+</resources>
