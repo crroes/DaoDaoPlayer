@@ -8,7 +8,7 @@ import org.junit.Test;
 
 /**
  * Created by cross on 2018/7/30.
- * <p>描述:
+ * <p>描述:设计模式的单元测试
  */
 
 public class PatternTest {
