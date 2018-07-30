@@ -14,7 +14,7 @@ import org.junit.Test;
 public class PatternTest {
 
 	@Test
-	public void Main(){
+	public void iterator(){
 		BookShelf bookShelf = new BookShelf();
 		bookShelf.appendBook(new Book("Around the World in 80 Days"));
 		bookShelf.appendBook(new Book("Bible"));
