@@ -1,1 +1,1 @@
-include ':app', ':fxwiz-widget-player', ':fxwiz-widget-jpush', ':fxwiz-widget-image'
+include ':app', ':fxwiz-widget-player', ':fxwiz-widget-jpush', ':fxwiz-widget-image', ':daodao-gof-pattern'
