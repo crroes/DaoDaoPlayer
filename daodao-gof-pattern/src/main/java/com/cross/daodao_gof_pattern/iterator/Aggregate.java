@@ -5,6 +5,8 @@ package com.cross.daodao_gof_pattern.iterator;
  * <p>描述:迭代器模式核心（2/4）集合接口
  */
 
-public interface Aggregate {
+public interface Aggregate<T> {
 	Iterator iterator();
+	int getLength();
+	T index(int index);
 }

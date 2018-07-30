@@ -8,7 +8,7 @@ import java.util.List;
  * <p>描述:迭代器模式核心（3/4）具体集合
  */
 
-public class BookShelf implements Aggregate {
+public class BookShelf implements Aggregate<Book> {
 
 	private List<Book> books = new ArrayList<>();
 	private int last;
@@ -18,15 +18,18 @@ public class BookShelf implements Aggregate {
 		return new BookShelfIterator(this);
 	}
 
-	public int getLength(){
+	@Override
+	public int getLength() {
 		return last;
 	}
 
-	public Book getBookAt(int index){
+	@Override
+	public Book index(int index) {
 		return books.get(index);
 	}
 
-	public void appendBook(Book book){
+
+	public void appendBook(Book book) {
 		books.add(book);
 		last++;
 	}

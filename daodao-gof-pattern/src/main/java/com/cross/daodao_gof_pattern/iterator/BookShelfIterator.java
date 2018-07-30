@@ -8,22 +8,21 @@ package com.cross.daodao_gof_pattern.iterator;
 public class BookShelfIterator implements Iterator<Book> {
 
 	private int index;
-	private BookShelf mBookShelf;
+	private Aggregate<Book> mAggregate;
 
 	public BookShelfIterator(BookShelf bookShelf) {
-		mBookShelf = bookShelf;
+		mAggregate = bookShelf;
 	}
 
 	@Override
 	public boolean hasNext() {
-
-		return index < mBookShelf.getLength();
+		return index < mAggregate.getLength();
 	}
 
 	@Override
 	public Book next() {
 
-		Book bookAt = mBookShelf.getBookAt(index);
+		Book bookAt = mAggregate.index(index);
 		index++;
 		return bookAt;
 	}
