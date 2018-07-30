@@ -26,4 +26,9 @@ public class PatternTest {
 			System.out.println(next.getName());
 		}
 	}
+
+	@Test
+	public void adapter(){
+
+	}
 }
