@@ -1,5 +1,6 @@
 package com.cross.daodao_gof_pattern;
 
+import com.cross.daodao_gof_pattern.adapter.ExecuteAdapter;
 import com.cross.daodao_gof_pattern.iterator.Book;
 import com.cross.daodao_gof_pattern.iterator.BookShelf;
 import com.cross.daodao_gof_pattern.iterator.Iterator;
@@ -29,6 +30,7 @@ public class PatternTest {
 
 	@Test
 	public void adapter(){
-
+		ExecuteAdapter.execute(ExecuteAdapter.Module.EXTEND);
+//		ExecuteAdapter.execute(ExecuteAdapter.Module.DELEGATE);
 	}
 }
