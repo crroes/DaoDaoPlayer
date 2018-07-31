@@ -18,12 +18,10 @@ public class BookShelf implements Aggregate<Book> {
 		return new BookShelfIterator(this);
 	}
 
-	@Override
 	public int getLength() {
 		return last;
 	}
 
-	@Override
 	public Book index(int index) {
 		return books.get(index);
 	}

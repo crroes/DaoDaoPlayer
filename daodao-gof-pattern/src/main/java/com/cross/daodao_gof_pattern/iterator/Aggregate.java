@@ -7,6 +7,4 @@ package com.cross.daodao_gof_pattern.iterator;
 
 public interface Aggregate<T> {
 	Iterator iterator();
-	int getLength();
-	T index(int index);
 }
