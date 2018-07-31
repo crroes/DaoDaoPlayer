@@ -3,5 +3,5 @@
 添加推送功能
 添加图片选择器功能
 添加设计模式示例和单元测试
-1.1 Iterator Pattern
-1.2 Adapter Pattern
+(1) Iterator Pattern
+(2) Adapter Pattern
