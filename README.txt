@@ -1,4 +1,5 @@
-﻿链接：
+﻿链接：https://github.com/crroes/DaoDaoPlayer
+
 基于aliyun高级播放器的应用层封装
 底层使用FFmpeg
 添加推送功能
