@@ -35,4 +35,5 @@ dependencies {
     implementation project(':fxwiz-widget-player')
     implementation project(':fxwiz-widget-jpush')
     implementation project(':fxwiz-widget-image')
+
 }
