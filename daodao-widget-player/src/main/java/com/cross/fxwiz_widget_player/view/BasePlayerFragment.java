@@ -126,7 +126,7 @@ public abstract class BasePlayerFragment extends Fragment {
 	/**
 	 * 设置播放器状态监听
 	 *
-	 * @param listener OnPlayerStatusChangeListener
+	 * @param listener {@link OnPlayerStatusChangeListener}
 	 */
 	public void setOnPlayerStatusChangeListener(OnPlayerStatusChangeListener listener) {
 		this.mOnPlayerStatusChangeListener = listener;
@@ -135,7 +135,7 @@ public abstract class BasePlayerFragment extends Fragment {
 		}
 	}
 
-
+//----------------同步播放器和View的生命周期 start----------------------
 	@Override
 	public void onPause() {
 		super.onPause();
@@ -159,6 +159,8 @@ public abstract class BasePlayerFragment extends Fragment {
 		super.onStop();
 		mPlayerView.onContextStop();
 	}
+
+//----------------同步播放器和View的生命周期 end----------------------
 
 	/**
 	 * 视频播放状态监听器

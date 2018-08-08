@@ -230,7 +230,7 @@ abstract class BasePlayerView extends FrameLayout implements PlayerUiControls, P
 
 				mCurrentState = PlayerState.CURRENT_STATE_PLAYING;
 
-				//如果有历史观看 todo 逻辑移动到onPrepared（） 避免有历史时会听到声音在进行跳转
+				//如果有历史观看 todo 有历史时会听到声音在进行跳转 后期处理
 				//1.不是直播
 				//2.时间不为0
 				//3.时间不等于播放器的当前播放时间（以秒为单位）
