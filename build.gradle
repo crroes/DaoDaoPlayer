@@ -22,7 +22,7 @@ allprojects {
         jcenter()
         maven { url "https://jitpack.io" }
         flatDir {
-            dirs '../fxwiz-widget-player/libs'
+            dirs '../daodao-widget-player/libs'
         }
     }
 }

@@ -32,8 +32,8 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
 
-    implementation project(':fxwiz-widget-player')
-    implementation project(':fxwiz-widget-jpush')
-    implementation project(':fxwiz-widget-image')
+    implementation project(':daodao-widget-player')
+    implementation project(':daodao-widget-jpush')
+    implementation project(':daodao-widget-image')
 
 }
