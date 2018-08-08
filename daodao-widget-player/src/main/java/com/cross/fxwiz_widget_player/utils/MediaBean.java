@@ -13,7 +13,7 @@ public class MediaBean {
 	private String videoUrl; //视频的url
 	private long currentPosition; //当前播放的的时间 单位ms
 	private long duration; //总时间
-	private boolean isShareIconHide;//是否隐藏分享图标（服务器配置）
+	private boolean isShareIconHide = true;//是否隐藏分享图标（默认影藏）
 	private MediaType type;//视频类型
 	private OnClickActionListener mOnClickActionListener;//播放器点击事件监听器
 
