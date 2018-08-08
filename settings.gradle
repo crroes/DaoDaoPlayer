@@ -1,1 +1,1 @@
-include ':app', ':daodao-widget-player', ':daodao-widget-jpush', ':daodao-widget-image', ':daodao-widget-gof'
+include ':app', ':daodao-widget-player', ':daodao-widget-jpush', ':daodao-widget-image', ':daodao-widget-gof', ':daodao-widget-mvp'

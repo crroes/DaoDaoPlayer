@@ -10,7 +10,7 @@ android {
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         manifestPlaceholders = [
-                JPUSH_PKGNAME : "com.cross.daodaoplayer",
+                JPUSH_PKGNAME: "com.cross.daodaoplayer",
         ]
     }
     buildTypes {
@@ -19,8 +19,8 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-    repositories{
-        flatDir{dirs 'libs'}
+    repositories {
+        flatDir { dirs 'libs' }
     }
 }
 

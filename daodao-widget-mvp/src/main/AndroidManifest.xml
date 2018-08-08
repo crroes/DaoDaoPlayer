@@ -1,0 +1,10 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="com.liuyan.crose.daodao_widget_mvp">
+
+    <application>
+        <activity android:name=".ui.LoginActivity">
+        </activity>
+    </application>
+</manifest>
+
+
