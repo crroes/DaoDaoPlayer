@@ -2,9 +2,9 @@ package com.liuyan.crose.daodao_widget_mvp.presenter;
 
 import android.app.Activity;
 
-import com.cross.daodaoplayer.LoginActivity;
-import com.cross.daodaoplayer.model.MLogin;
-import com.cross.daodaoplayer.model.MLoginImpl;
+import com.liuyan.crose.daodao_widget_mvp.model.MLogin;
+import com.liuyan.crose.daodao_widget_mvp.model.MLoginImpl;
+import com.liuyan.crose.daodao_widget_mvp.ui.LoginActivity;
 
 /**
  * Created by cross on 2018/8/8.

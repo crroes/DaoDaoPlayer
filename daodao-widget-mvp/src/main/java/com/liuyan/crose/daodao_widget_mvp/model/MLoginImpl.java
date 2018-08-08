@@ -1,6 +1,7 @@
 package com.liuyan.crose.daodao_widget_mvp.model;
 
-import com.cross.daodaoplayer.presenter.PLoginActivityImpl;
+
+import com.liuyan.crose.daodao_widget_mvp.presenter.PLoginActivityImpl;
 
 /**
  * Created by cross on 2018/8/8.
