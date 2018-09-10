@@ -22,6 +22,9 @@ public class PatternTest {
 		bookShelf.appendBook(new Book("Cinderella"));
 		bookShelf.appendBook(new Book("Daddy Long Legs"));
 		bookShelf.appendBook(new Book("Master branch"));
+		bookShelf.appendBook(new Book("测试Git创建、合并分支"));
+		bookShelf.appendBook(new Book("测试Git本地提交"));
+
 		Iterator<Book> iterator = bookShelf.iterator();
 		while (iterator.hasNext()) {
 			Book next = iterator.next();
