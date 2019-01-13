@@ -15,9 +15,9 @@ ext {
     GRADLE_HTTP = "com.squareup.retrofit2:retrofit:2.4.0"
 
     //build version
-    min_sdk_version
-    target_sdk_version
-    compile_sdk_version
+    min_sdk_version = 19
+    target_sdk_version = 26
+    compile_sdk_version = 28
 
     //version
     APP_PACKAGE_NAME = "com.cross.daodaoplayer"
