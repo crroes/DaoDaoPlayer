@@ -11,6 +11,7 @@ import com.cross.fxwiz_widget_player.view.BasePlayerFragment;
 import com.cross.fxwiz_widget_player.view.MyVideoPlayerFragment;
 import com.image.selector.view.CustomPhotoSelectFragment;
 
+import java.net.HttpURLConnection;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {

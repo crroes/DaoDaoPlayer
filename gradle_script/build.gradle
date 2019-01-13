@@ -1,0 +1,27 @@
+
+task hellow {
+    println'hello world!'
+}
+apply from : 'gradle_script/buil.gradle'
+
+/**
+ * dependencies
+ */
+ext {
+
+    GRADLE_TOOLS = 'com.android.tools.build:gradle:3.0.1'
+
+    //dependence
+    GRADLE_HTTP = "com.squareup.retrofit2:retrofit:2.4.0"
+
+    //build version
+    min_sdk_version
+    target_sdk_version
+    compile_sdk_version
+
+    //version
+    APP_PACKAGE_NAME = "com.cross.daodaoplayer"
+    APP_VERSION_NAME = "1.0.0"
+    APP_VERSION_CODE = 100
+}
+
